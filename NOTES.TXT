@@ -1,0 +1,68 @@
+
++ STATE: LISTPLAYERS
+{
+    "action":"CANTIDAD"
+    "value": 2 | 4//Cantidad de jugadores
+}
+{
+    "action":"AGREGAR"
+    "name": "Raphael" //Nombre de jugador
+}
+
++ STATE: GAMEMODE
+{
+    "action":"MODE"
+    "mode": "points" | "expand" // Modo de juego
+}
+
++ STATE: GAMEVALUE
+{
+    "action":"VALUE"
+    "value": 30 | 40 | 5 | 7  //valor del la meta segun modo de juego (expansion, puntos)
+}
+
++ STATE: FIRSTROUND
+{
+    "action":"MOVE",
+    "player":"Raphael" //Jugador que ejecuto el movimiento para validar el turno
+    "direction":"UP"|"DOWN"|"LEFT"|"RIGHT" //Direccion a la que se movera el puntero
+}
+{
+    "action":"BUILD",//Agrega un objeto (trocha, poblado) segun el estado de seleccion en el que se encuentr
+    "player":"Raphael" 
+}
+
++ STATE: TURN
+{
+    "action":"DICE",
+    "player":"Raphael" //Jugador que ejecuto la accion de lanzamiento para validar el turno
+}
+{
+    "action":"BUILD",//Inicia el estado de construccion segun el tipo (poblado o trocha) que se envie
+    "type":"h"|"t", //h=poblado & t=trocha
+    "player":"Raphael" 
+}
+{
+    "action":"CANCELBUILD",//Cancela y sale del modo de construccion
+    "player":"Raphael" 
+}
+{
+    "action":"PUERTO",//Consulta si se encuentra en algun puerto de recurso
+    "player":"Raphael" 
+}
+{
+    "action":"SPECIALCARD",//Ejecuta accion relacionada a la carta especial
+    "type":"AGRICULTOR",
+    "player":"Raphael" 
+}
+
++ STATE: BUILD
+{
+    "action":"MOVE",
+    "player":"Raphael" //Jugador que ejecuto el movimiento para validar el turno
+    "direction":"UP"|"DOWN"|"LEFT"|"RIGHT" //Direccion a la que se movera el puntero
+}
+{
+    "action":"BUILD",//Agrega un objeto (trocha, poblado) segun el estado de seleccion en el que se encuentr
+    "player":"Raphael" 
+}

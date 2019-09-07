@@ -1,0 +1,15 @@
+{
+  "name": "inkatanapp",
+  "version": "1.0.0",
+  "description": "inkatan game",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Raphael Bravo",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^6.3.0",
+    "eslint-config-google": "^0.14.0"
+  }
+}
