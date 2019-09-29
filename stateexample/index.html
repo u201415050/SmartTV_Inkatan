@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script src="../webOSTVjs-1.1.0/webOSTV.js" charset="utf-8"></script>
+    <script src="../webOSTVjs-1.1.0/webOSTV-dev.js" charset="utf-8"></script>
+
+    <script type="text/javascript" src="../logic/jquery-1.11.0.min.js"></script>
+    <script>
+        function selectButton(str) {
+            console.log(str);
+            connect(str)
+            var findIp = str.indexOf(':8080');
+
+            //$(location).attr('href', location.href.substr(0, location.href.length - 10) + "Inkatan/SelectPlayers/index.html?url=" + ipConnected + "&ipSelected=" + IpSelected);
+            //onsole.log(location.href.substr(0, location.href.length - 10)+"inkatan/SelectPlayers/index.html?url=" + ipConnected + "&ipSelected=" + IpSelected);
+            location.replace(location.href + "main.html?url=" + str)
+
+        }
+
+        function found(url, index) {
+            alert("HOLA")
+            var listContainer = $("#list");
+
+            listContainer.append(`<button onclick="selectButton('${url}')">${url}</div>`);
+        }
+    </script>
+    <script src="../logic/synapse.js" charset="utf-8"></script>
+    <script src="../logic/discover.js" charset="utf-8"></script>
+    <script src="../logic/conect.js" charset="utf-8"></script>
+
+
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="title">PCT GLOBAL STATE</div>
+        <div id="btnReload" onclick="location.reload()" class="buttonReload">
+            Actualizar
+        </div>
+
+        <div id="searching">Buscando dispositivos</div>
+
+        <div id="list">
+        </div>
+
+
+    </div>
+</body>
+
+</html>

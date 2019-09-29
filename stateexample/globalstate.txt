@@ -1,0 +1,404 @@
+//GlobalStateManager
+class State {
+    name;
+    messageCallbacks;
+    mapBlockedActions;
+    constructor(name) {
+      this.name = name;
+      this.messageCallbacks = {};
+      this.blockedActions = {};
+    }
+    addBlockedAction(message) {
+      this.mapBlockedActions[message] = true;
+      return true;
+    }
+    
+    removeBlockedAction(message) {
+      delete this.mapBlockedActions[message];
+      return true;
+    }
+    
+    addBlockedActions(messages) {
+      messages.map(message => {
+        this.mapBlockedActions[message] = true;
+      });
+  
+      return true;
+    }
+    
+    removeBlockedActions(messages) {
+      messages.map(message => {
+        delete this.mapBlockedActions[message];
+      });
+  
+      return true;
+    }
+    
+    
+    clearBlockedActions() {
+      this.mapBlockedActions = {};
+      return true;
+    }
+  
+    printContent() {
+      console.log(
+        this.name + ":" + JSON.stringify(Object.keys(this.messageCallbacks))
+      );
+      return {
+        state: this.name,
+        callbacks: Object.keys(this.messageCallbacks)
+      };
+    }
+    addListener(callbackType, callback) {
+      var exist = true;
+      if (this.messageCallbacks[callbackType] != null) {
+        exist = false;
+      }
+      this.messageCallbacks[callbackType] = callback;
+      return exist;
+    }
+  }
+  
+  /**
+   * GlobalState
+   * permite gestionar las acciones ejecutadas en la aplicacion.
+   * Agrupa los mensajes en estados y facilita la asignacion de acciones y su ejecucion
+   *
+   * @example
+   * const globalstate = new GlobalState(
+   *    ["WELCOME","MENU","HELP","GAME"] // Estados iniciales
+   * )
+   * @todo Inicializar un GlobalState
+   */
+  
+  class GlobalState {
+    states;
+    currentState;
+    mapStates;
+    stateControllers;
+    mapBlockedActions;
+    /**
+     * @param {String[]} initialstates Lista inical de estados
+     */
+    constructor(initialStates) {
+      this.mapStates = {};
+      this.stateControllers = [];
+      this.states = [];
+      this.mapBlockedActions = {};
+      if (initialStates != null) {
+        initialStates.map((st, i) => {
+          this.mapStates[st] = i;
+          this.states.push(st);
+          this.stateControllers.push(new State(st));
+        });
+      }
+    }
+  
+    /**
+     * Añade un nuevo estado, el cual representa un contexto dentro de la aplicacion
+     * Se le podran añadir mensajes que ejecutaran sus acciones respectivas
+     * @param {String} nameState Nombre del nuevo estado
+     * @return {Boolean} Retorna falso en caso el estado ya exista
+     *
+     * @example
+     * var creado = globalstate.addState("FIGHT")
+     * @todo Crear un nuevo estado
+     *
+     */
+    addState(nameState) {
+      if (this.mapStates[nameState] == null) {
+        this.states.push(nameState);
+        this.mapStates[nameState] = this.states.length - 1;
+        this.stateControllers.push(new State(nameState));
+        console.log("State succesfully added: " + nameState);
+        return true;
+      } else {
+        console.log("This state: " + nameState + " already exists");
+        return false;
+      }
+    }
+  
+    /**
+     * Selecciona un estado existente como actual, esto solo permitira que solo las acciones que pertenezcan a este estado puedan ser ejecutadas
+     * @param {String} currentState Nombre del estado
+     * @return {Boolean} Retorna falso en caso el estado no exista
+     *
+     * @example
+     * var setted = globalstate.setCurrentState("MENU")
+     * @todo Selecciona una estado como actual
+     *
+     */
+    setCurrentState(currentState) {
+      if (this.mapStates[currentState] == null) {
+        console.log("This state: " + currentState + " doesn't exists");
+        return false;
+      } else {
+        this.currentState = currentState;
+        console.log("State succesfully changed: " + currentState);
+        return true;
+      }
+    }
+    /**
+     * @typedef {StateInfo} StateInfo Informacion del estado
+     *
+     * @property {String} state Nombre del estado
+     * @property {String[]} callbacks Lista de mensajes asignados al estado
+     */
+  
+    /**
+     * @typedef {GlobalInfo} GlobalInfo Informacion global
+     *
+     * @property {StateInfo[]} states Informacion de todos los estados
+     * @property {String} currentState Estado actual
+     */
+    /**
+     * Retorna la informacion actual del GlobalState
+     * @return {GlobalInfo} Informacion Completa del GlobalState
+     *
+     * @example
+     * var globinfo = globalstate.printContent()
+     * @todo Conocer la informacion actual del GlobalState
+     */
+    printContent() {
+      console.log("States: " + this.states);
+      var list = this.stateControllers.map(x => x.printContent());
+      console.log("MapStates: " + JSON.stringify(this.mapStates));
+      console.log("CurrentState: " + this.currentState);
+      return {
+        states: list,
+        currentState: this.currentState
+      };
+    }
+    /**
+     * Añade una nueva accion al estado. Esta accion podra ser ejecutada solo si se encuentra en el estado actual
+     * @param {String} state Estado al cual se asignara la accion
+     * @param {String} callbackType Nombre de la accion
+     * @param {Function} callback Funcion que se ejecutara cuando se reciba el nombre de la accion
+     *
+     * @return {Boolean} Retorna falso en caso que no exista el estado
+     * @example
+     * var added = globalstate.addListenertoState("FIGHT","PUNCH",function(params){
+     *    console.log("punch executed")
+     * })
+     * @todo Añade una nueva accion al estado
+     */
+    addListenertoState(state, callbackType, callback) {
+      if (this.mapStates[state] == null) {
+        console.log("This state: " + state + " doesn't exists");
+        return false;
+      } else {
+        console.log("Listener succesfully added: " + state + "-" + callbackType);
+        return this.stateControllers[this.mapStates[state]].addListener(
+          callbackType,
+          callback
+        );
+      }
+    }
+    /**
+     * Ejecuta una accion. Solo se ejecutara la accion si es que la aplicacion se encuentra en el estado correspondiente.
+     * @param {Object} actionObject Informacion de la accion
+     * @param {String} actionObject.action Nombre de la accion
+     * @param {Object} actionObject.params Parametros extras para la funcion
+     *
+     * @return {Boolean} Retorna falso en caso la accion no exista en el estado actual
+     * @example
+     * var executed = globalstate.execute({
+     *    action: "PUNCH",
+     *    params:{
+     *      speed: 50,
+     *      strength: 24
+     *    }
+     * })
+     * @todo Ejecuta la accion correspondiente
+     */
+    execute(actionObject) {
+      console.log(actionObject);
+      try {
+        if (this.mapBlockedActions[actionObject["action"]] == null) {
+          if(this.stateControllers[
+            this.mapStates[this.currentState]
+          ].mapBlockedActions[actionObject["action"]] == null){
+          this.stateControllers[
+            this.mapStates[this.currentState]
+          ].messageCallbacks[actionObject["action"]](actionObject);
+          return true;
+        }else{
+          return false;
+        }
+          
+        } else return false;
+      } catch (e) {
+        console.log("Action in " + this.currentState + " doesn't exist");
+        return false;
+      }
+    }
+  
+    /**
+     * Bloquea la ejecucion de la accion, en caso se encuentre bloqueada una accion no podra ser ejecutada.
+     * @param {String} message Nombre de la accion
+     *
+     * @return {Boolean} Retorna falso en caso no exista la accion en el contexto actual
+     * @example
+     * var blocked = globalstate.addBlockedAction("JUMP")
+     * @todo Bloquea la ejecucion de una accion
+     */
+    addBlockedAction(message) {
+      this.mapBlockedActions[message] = true;
+      return true;
+    }
+    /**
+     * Activa la ejecucion de una accion previamente bloqueada, la accion podra ser ejecutada
+     * @param {String} message Nombre de la accion
+     *
+     * @return {Boolean} Retorna falso en caso no exista la accion en el contexto actual
+     * @example
+     * var allowed = globalstate.removeBlockedAction("JUMP")
+     * @todo Activa nuevamente la ejecucion de una accion
+     */
+    removeBlockedAction(message) {
+      delete this.mapBlockedActions[message];
+      return true;
+    }
+    /**
+     * Bloquea la ejecucion de las acciones, las acciones bloqueada una accion no podran ser ejecutadas.
+     * @param {String[]} messages Nombre de la accion
+     *
+     * @return {Boolean} Retorna falso en caso alguna accion no exista en el contexto actual
+     * @example
+     * var blocked = globalstate.addBlockedActions(["JUMP","WALK"])
+     * @todo Bloquea la ejecucion de las acciones
+     */
+    addBlockedActions(messages) {
+      messages.map(message => {
+        this.mapBlockedActions[message] = true;
+      });
+  
+      return true;
+    }
+    /**
+     * Activa la ejecucion de las acciones previamente bloqueadas, las acciones podran ser ejecutadas
+     * @param {String[]} messages Lista de accion
+     *
+     * @return {Boolean} Retorna falso en caso alguna accion no exista en el contexto actual
+     * @example
+     * var blocked = globalstate.removeBlockedActions(["JUMP","WALK"])
+     * @todo Activa nuevamente la ejecucion de las acciones
+     */
+    removeBlockedActions(messages) {
+      messages.map(message => {
+        delete this.mapBlockedActions[message];
+      });
+  
+      return true;
+    }
+    
+    /**
+     * Desbloquea todas las acciones previamente bloqueadas
+     *
+     * @return {Boolean} Retorna falso si falla la ejecucion
+     * @example
+     * var cleared = globalstate.clearBlockedActions()
+     * @todo Desbloquea la acciones bloqueadas
+     */
+    clearBlockedActions() {
+      this.mapBlockedActions = {};
+      return true;
+    }
+    /**
+     * Bloquea la ejecucion de la accion en un estado especifico, en caso se encuentre bloqueada una accion no podra ser ejecutada.
+     * @param {String} message Nombre de la accion
+     *
+     * @return {Boolean} Retorna falso en caso no exista la accion en el contexto actual
+     * @example
+     * var blocked = globalstate.addBlockedActionInState("START","JUMP")
+     * @todo Bloquea la ejecucion de una accion en un estado especifico
+     */
+    addBlockedActionInState(state,message) {
+      if (this.mapStates[state] == null) {
+        console.log("This state: " + state + " doesn't exists");
+        return false;
+      } else {
+        console.log("Added in: " + state );
+        this.stateControllers[this.mapStates[state]].addBlockedAction(message);
+        return true;
+      }
+    }
+    /**
+     * Activa la ejecucion de una accion previamente bloqueada en un estado especifico, la accion podra ser ejecutada
+     * @param {String} message Nombre de la accion
+     *
+     * @return {Boolean} Retorna falso en caso no exista la accion en el contexto actual
+     * @example
+     * var allowed = globalstate.removeBlockedActionInState("START","JUMP")
+     * @todo Activa nuevamente la ejecucion de una accion en un estado especifico
+     */
+    removeBlockedActionInState(state,message) {
+      if (this.mapStates[state] == null) {
+        console.log("This state: " + state + " doesn't exists");
+        return false;
+      } else {
+        console.log("Added in: " + state );
+        this.stateControllers[this.mapStates[state]].removeBlockedAction(message);
+        return true;
+      }
+    }
+    /**
+     * Bloquea la ejecucion de las acciones en un estado especifico, las acciones bloqueada una accion no podran ser ejecutadas.
+     * @param {String[]} messages Nombre de la accion
+     *
+     * @return {Boolean} Retorna falso en caso alguna accion no exista en el contexto actual
+     * @example
+     * var blocked = globalstate.addBlockedActionsInState("START",["JUMP","WALK"])
+     * @todo Bloquea la ejecucion de las acciones en un estado especifico 
+     */
+    addBlockedActionsInState(state,messages) {
+      if (this.mapStates[state] == null) {
+        console.log("This state: " + state + " doesn't exists");
+        return false;
+      } else {
+        console.log("Added in: " + state );
+        this.stateControllers[this.mapStates[state]].addBlockedActions(messages);
+        return true;
+      }
+    }
+    /**
+     * Activa la ejecucion de las acciones previamente bloqueadas en un estado especifico, las acciones podran ser ejecutadas
+     * @param {String[]} messages Lista de accion
+     *
+     * @return {Boolean} Retorna falso en caso alguna accion no exista en el contexto actual
+     * @example
+     * var blocked = globalstate.removeBlockedActionsInState("START",["JUMP","WALK"])
+     * @todo Activa nuevamente la ejecucion de las acciones en un estado especifico
+     */
+    removeBlockedActionsInState(state,messages) {
+      if (this.mapStates[state] == null) {
+        console.log("This state: " + state + " doesn't exists");
+        return false;
+      } else {
+        console.log("Removed in: " + state );
+        this.stateControllers[this.mapStates[state]].removeBlockedActions(messages);
+        return true;
+      }
+    }
+    
+    /**
+     * Desbloquea todas las acciones previamente bloqueadas en un estado especifico
+     *
+     * @return {Boolean} Retorna falso si falla la ejecucion
+     * @example
+     * var cleared = globalstate.clearBlockedActionsInState("START")
+     * @todo Desbloquea la acciones bloqueadas en un estado especifico
+     */
+    clearBlockedActionsInState(state) {
+      if (this.mapStates[state] == null) {
+        console.log("This state: " + state + " doesn't exists");
+        return false;
+      } else {
+        console.log("Cleared : " + state );
+        this.stateControllers[this.mapStates[state]].clearBlockedActions();
+        return true;
+      }
+    }
+  }
+
+  

@@ -21,19 +21,21 @@ var cards = Cards()
 var modal = Modal()
 var backImage;
 // PRELOAD IMAGES
-function preload() {
+ function preload() {
     mapa.preload()
     mapa.resources.preload()
     backImage=loadImage('assets/background.jpg');
 }
+
 //CALL CARD
-function callCard(typeCard, playerCard) {
+ function callCard(typeCard, playerCard) {
     cards.action(typeCard, mapPlayers[playerCard])
-}
+}  
 //SETUP MAP AND PLAYERS
 function setup() {
     var canvas = createCanvas(widthCanvas, heightCanvas);
     canvas.parent('#canvas')
+    frameRate(1000);
     background(100, 180, 100)
     mapa.setup()
     setPlayer() 
@@ -44,11 +46,12 @@ function setup() {
 function draw() {
     background(100, 180, 100)
     image(backImage, 0, 0, widthCanvas, heightCanvas)
-    mapa.printAll()
+     mapa.printAll()
     mapa.printObjects(PlayersDetails)
     game.Game(mapa, PlayersDetails)
     showPointer()
     modal.draw()
+    text(frameCount, 10, 10); 
 }
 
 //SHOW MAP POINTER
@@ -381,14 +384,14 @@ function IsPort(playerName){
     sendMessageServer({action:"PUERTO",puertos:ports, player:PlayersDetails[player].name})
 }
 function ExchangeOut(data){
-    const { player, input , output} = data
+    
     var value = {
-        player: player,
+        player: data.player,
         resource:[{
-            name: input,
+            name: data.input,
             amount: -4,
         },{
-            name: output,
+            name: data.output,
             amount: 1,
         }]
     }
@@ -396,7 +399,8 @@ function ExchangeOut(data){
 }
 function ResourcesController(data){ //[{name,list}]
     for (var i = 0; i < data.length; i++) {
-        var {name, resource} = data[i]
+        var name = data[i].name
+        var resource = data[i].resource
         console.log(data)
         for (var j = 0; j < resource.length; j++) {
             console.log(resource)
@@ -414,8 +418,9 @@ function ResourcesController(data){ //[{name,list}]
 }
 function SpecialCardsController(data){ //[{name,list}]
     for (var i = 0; i < data.length; i++) {
-        var {name, specialcards} = data[i]
-
+        
+        var name = data[i].name
+        var specialcards = data[i].specialcards
         for (var j = 0; j < specialcards.length; j++) {
             PlayersDetails[mapPlayers[name]].specialcards[specialcards[i].name] =
             PlayersDetails[mapPlayers[name]].specialcards[specialcards[i].name]+specialcards[i].amount
@@ -431,9 +436,9 @@ function SpecialCardsController(data){ //[{name,list}]
     console.log(PlayersDetails)
 }
 function KnightController(data){ //{name}
-    var {name}= data
+    
     var message = {
-        player: name,
+        player: data.name,
         action: "knight"
     }
     sendMessageServer(message)
@@ -493,5 +498,6 @@ function setStateListeners(){
     });
     
 }
+
 
 

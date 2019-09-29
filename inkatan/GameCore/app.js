@@ -8,7 +8,6 @@ var arrayElements = [
 $(document).ready(function () {
 	//width = $(window).width()
 
-
 	var namesPlayers = ActualParameters.namesPlayers.split(',')
 	for (var index = 0; index < ActualParameters.numberPlayers; index++) {
 		console.log(index);
@@ -38,7 +37,7 @@ function PaseTurno() {
 	})
 	activeTurn = true
 }
-
+console.log("step1")
 function BackTurno() {
 	//alert(1)
 	$('#avatar' + (turnIndex + 1)).removeClass("turnActive");
@@ -54,3 +53,4 @@ function BackTurno() {
 		player: PlayersDetails[turnIndex].name
 	})
 }
+console.log("step2")

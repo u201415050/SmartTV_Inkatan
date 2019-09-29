@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <script type="text/javascript" src="../logic/jquery-1.11.0.min.js"></script>
+  <script src="conect.js"></script>
+  <script src="app.js"></script>
+  <script src="scripts.js"></script>
+  <title>PDCGlobalState</title>
+</head>
+<style>
+  body {
+    margin: 0px;
+    padding: 0px;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .ccontainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .side {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    flex: 1;
+    padding-right: 20px;
+  }
+
+  .console {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: solid rgba(0, 0, 0, 0.6) 4px;
+    width: 80%;
+    margin: 20px 0px 0px 0px;
+    height: 80px;
+    display: flex;
+    overflow: auto;
+    padding-left: 20px;
+    align-items: center;
+    font-size: 40px;
+    color: white;
+  }
+
+  .badlist {
+    background-color: rgba(200, 80, 80, 0.5);
+    border: solid rgba(0, 0, 0, 0.6) 4px;
+    width: 80%;
+    margin: 20px 0px 0px 0px;
+    display: flex;
+    overflow: auto;
+    padding-left: 20px;
+    align-items: center;
+    font-size: 40px;
+    color: white;
+  }
+
+  .titleIncoming {
+    margin: 20px 0px 0px 0px;
+  }
+
+  .state {
+    display: inline-block;
+    font-size: 30px;
+    border-bottom: solid black 3px;
+    margin-right: 20px;
+  }
+
+  .action {
+    font-size: 25px;
+    margin-left: 20px;
+  }
+
+  .failed {
+    background-color: rgba(100, 0, 0, 0.5);
+  }
+
+  .success {
+    background-color: rgba(50, 100, 50, 0.5);
+  }
+</style>
+
+<body>
+  <div class="ccontainer">
+    <div class="side" style="align-items: flex-start;padding-left: 20px;padding-top: 20px;">
+      NUEVO ESTADO
+      <div style="display:inline-block">
+        <input type="text" id="field" />
+        <button onclick="addState()">CREAR</button>
+      </div>
+      <div id="stateList"></div>
+    </div>
+    <div class="side" style="align-items: center">
+      <div style="display:inline-block">
+
+        ESTADO ACTUAL: <div style="display:inline-block" id="current"></div>
+      </div>
+      <h2 class="titleIncoming">MENSAJES RECIBIDOS</h2>
+      <div class="console" id="consola"></div>
+      <div style="display:inline-block;margin-top:20px">
+        <input type="text" id="exfield" placeholder="Ejecutar Accion" />
+        <button onclick="execute()">EJECUTAR</button>
+      </div>
+    </div>
+    <div class="side">
+      <button onclick="clearBlocked()">DESBLOQUEAR TODOS</button>
+      <h2 class="titleIncoming">MENSAJES BLOQUEADOS</h2>
+      <div id="badlist"></div>
+    </div>
+  </div>
+</body>
+
+</html>

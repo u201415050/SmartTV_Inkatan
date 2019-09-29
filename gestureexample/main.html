@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+  <script type="text/javascript" src="../logic/jquery-1.11.0.min.js"></script>
+  <script src="conect.js"></script>
+
+
+  <script src="../globalstate/app.js"></script>
+  <title>PDCGestureDetector</title>
+</head>
+<style>
+  html,
+  body {
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .container {
+    background-color: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    overflow: hidden;
+  }
+
+  .content {
+    flex: 1;
+  }
+
+  .side {
+    background-color: red;
+    width: 50%;
+  }
+
+  .top {
+    background-color: green;
+    height: 50%;
+  }
+
+  .animate {
+    position: absolute;
+
+    background-color: red;
+    height: 50px;
+    width: 50px;
+  }
+</style>
+<script>
+  var globalstate = new GlobalState();
+
+  globalstate.addState("GESTURE");
+  globalstate.addListenertoState("GESTURE", "BOTTOM", function (params) {
+    $("#top").animate({
+      top: `${$(window).height()}px`,
+
+    }, 700, function () {
+      $("#top").css("top", "-50px");
+    });
+  })
+  globalstate.addListenertoState("GESTURE", "RIGHT", function (params) {
+    $("#left").animate({
+      left: `${$(window).width()}px`,
+
+    }, 700, function () {
+      $("#left").css("left", "-50px");
+    });
+  })
+  globalstate.addListenertoState("GESTURE", "LEFT", function (params) {
+    $("#right").animate({
+      right: `${$(window).width()}px`,
+
+    }, 700, function () {
+      $("#right").css("right", "-50px");
+    });
+  })
+  globalstate.addListenertoState("GESTURE", "TOP", function (params) {
+    $("#bottom").animate({
+      bottom: `${$(window).height()}px`,
+
+    }, 700, function () {
+      $("#bottom").css("bottom", "-50px");
+    });
+  })
+
+  function execute(message) {
+
+    var valid = globalstate.execute({
+      action: message
+    });
+
+  }
+</script>
+
+<body>
+  <div class="container">
+    <div class="animate" id="top" style="top: -50px;"></div>
+    <div class="animate" id="left" style="left: -50px;"></div>
+    <div class="animate" id="right" style="right: -50px;"></div>
+    <div class="animate" id="bottom" style="bottom: -50px;"></div>
+    <!-- <button id="clicktop">top</button>
+    <button id="clickleft">left</button>
+    <button id="clickright">right</button>
+    <button id="clickbottom">bottom</button> -->
+  </div>
+</body>
+
+</html>

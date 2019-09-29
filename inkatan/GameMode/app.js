@@ -1,7 +1,7 @@
 $(document).ready(function () {
 	setStateListeners();})
 
-var nPlayers = getParameterByName("nplayer")
+var nPlayers = ActualParameters.nplayer
 var players = $('#playersContainer')
 
 for (var i = 1; i < nPlayers; i++) {

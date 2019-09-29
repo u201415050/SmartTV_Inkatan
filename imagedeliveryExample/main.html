@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <script type="text/javascript" src="../logic/jquery-1.11.0.min.js"></script>
+  <script src="conect.js"></script>
+  <script src="../imagedelivery/app.js"></script>
+  <script src="../globalstate/app.js"></script>
+  <title>PDCImageDelivery</title>
+</head>
+<style>
+  body {
+    margin: 0px;
+    padding: 0px;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .ccontainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+</style>
+<script>
+  var globalstate = new GlobalState();
+  var delivery = new ImageDelivery();
+  globalstate.addState("IMAGE");
+  globalstate.addListenertoState("IMAGE", "PHOTO", function (params) {
+    console.log(params)
+    var myElement = document.getElementById("image");
+    console.log(myElement)
+    delivery.ConvertImage(params.image);
+    // "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAOCAYAAAAi2ky3AAAAAXNSR0IArs4c6QAAAOlJREFUKBWlkksOgjAQhmfQra5hqxcxgjvvQTyDC3Ah3EDjXfQIJt7ALQdwzdi/WEKgaMFJ2s5Mp1/mUaI/xF/niR8dUyB4LAcAKSnREI8O3hhQE2LeD86oDWGVTXHdp4NAfRBdHjYR0UBmFpNq+/wGQewUED/KzzCUvrPBfkE0KNhkJxKKYShgB+YCwVuPhR/qF1QlicTIzpTqCgFI9yYIs7gUUuVVvSLmi2pXYf6JDvxMB7pN6ql1YI1oM+KGq6NOjOf1vN3ni7BQNW6ND6cLBHE1CAZgs2XIqvkr2K4QxFoFTcayXvY435GafOxqdak0AAAAAElFTkSuQmCC"
+    //)
+  })
+</script>
+
+<body>
+  <div class="ccontainer">
+    <h1>IMAGEN OBTENIDA</h1><br />
+    <img id="image" style="width: 200px;height:200px">
+  </div>
+</body>
+
+</html>

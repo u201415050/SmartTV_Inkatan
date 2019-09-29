@@ -21,7 +21,7 @@ function Vertice(iIndex, jIndex, posx, posy) {
       pop();
     },
     getAdyacentsAristas: function() {
-      const listvalid = [];
+      var listvalid = [];
       if (mapa.listAristas[this.iIndex-1]!=null) {
         if ((this.iIndex%2==0&&this.iIndex!=10)||this.iIndex==1) {
           if (mapa.listAristas[this.iIndex-1][(this.jIndex*2)-1]!=null) {
@@ -207,7 +207,7 @@ function Vertice(iIndex, jIndex, posx, posy) {
     },
     drawHouse: function(value) {
       push();
-      const turn=value.id==turnIndex;
+      var turn=value.id==turnIndex;
       stroke('rgba(0,0,0,'+(turn?'0.5':'0.5')+')');
       strokeWeight(radio * 0.05);
       fill(value ? turn?value.colorTotal:value.colorOpacity : PlayersDetails[turnIndex].color);
@@ -230,10 +230,10 @@ function Arista(iIndex, jIndex, start, end) {
     taken: '',
     drawWay: function(value) {
       // ellipse(this.posx, this.posy, 50,10)
-      const turn=value.id==turnIndex;
+      var turn=value.id==turnIndex;
       fill(value ? turn?value.colorTotal:value.colorOpacity : PlayersDetails[turnIndex].color);
 
-      const angulo = Math.atan((this.start.posy - this.end.posy) / (this.start.posx - this.end.posx));
+      var angulo = Math.atan((this.start.posy - this.end.posy) / (this.start.posx - this.end.posx));
       push();
       stroke('rgba(0,0,0,'+(turn?'0.5':'0.5')+')');
       strokeWeight(radio * 0.05);
@@ -255,7 +255,7 @@ function Arista(iIndex, jIndex, start, end) {
       // ellipse(this.posx, this.posy, 50,10)
       fill(value ? value : PlayersDetails[turnIndex].color);
 
-      const angulo = Math.atan((this.start.posy - this.end.posy) / (this.start.posx - this.end.posx));
+      var angulo = Math.atan((this.start.posy - this.end.posy) / (this.start.posx - this.end.posx));
       push();
       stroke('rgba(255,255,255,0.5)');
       strokeWeight(radio * 0.05);
@@ -375,7 +375,7 @@ function Knight(iIndex, jIndex) {
 
 function Mapa() {
   return {
-    listRombos: [],
+    listRombos: [[],[],[],[],[],[],[],[],[]],
     listPoints: [],
     listAristas: [],
     altura: 9,
@@ -405,22 +405,20 @@ function Mapa() {
     },
     setup: function() {
       for (var i = 0; i < this.altura; i++) {
-        const padd = (i % 2 == 0 ? radio : 0) + radio;
+        var padd = (i % 2 == 0 ? radio : 0) + radio;
         for (var j = 0; j < (i % 2 == 0 ? 5 : 6); j++) {
-          const origen = Vertice(i, j, paddingLeft + padd + (radio * 2 * j), paddingHeight + radio + (radio * i));
-          const resource = this.resources.getRandom();
-          const number = resource.name == 'desierto' ? {
+          var origen = Vertice(i, j, paddingLeft + padd + (radio * 2 * j), paddingHeight + radio + (radio * i));
+          var resource = this.resources.getRandom();
+          var number = resource.name == 'desierto' ? {
             tag: 7,
           } : this.numbers.getRandom();
           if (resource.name == 'desierto') {
             this.knight = new Knight(i, j);
           }
-          const rombo = Rombo(origen, resource, number, resource.name == 'desierto');
+          var rombo = Rombo(origen, resource, number, resource.name == 'desierto');
           this.setSides(rombo);
-          if (this.listRombos[i] == null) {
-            this.listRombos[i] = [];
-          }
-          this.listRombos[i][j] = rombo;
+          
+          this.listRombos[i].push(rombo);
         }
       }
     },
@@ -491,13 +489,13 @@ function Mapa() {
           }else{
           var canTake = true;
 
-          const listAdj = this.listPoints[player.indicators.vertice.fi][player.indicators.vertice.fj].getAdyacents();
-          const tempListPoints = this.listPoints;
+          var listAdj = this.listPoints[player.indicators.vertice.fi][player.indicators.vertice.fj].getAdyacents();
+          var tempListPoints = this.listPoints;
           listAdj.map(function(ad) {
             if (ad.fi >= 0 && ad.fj >= 0) {
               if (tempListPoints[ad.fi] != null) {
                 if (tempListPoints[ad.fi][ad.fj] != null) {
-                  const tempTaken = tempListPoints[ad.fi][ad.fj].taken;
+                  var tempTaken = tempListPoints[ad.fi][ad.fj].taken;
                   if (tempTaken.toString() != '') {
                     reason='No puedes colocar un poblado adyacente a otro';
                     canTake = false;
@@ -566,7 +564,7 @@ function Mapa() {
       } else if (this.select == 'arista') {
         var reason = '';
         if (this.listAristas[player.indicators.arista.fi][player.indicators.arista.fj].taken.toString() == '') {
-          const current = this.listAristas[player.indicators.arista.fi][player.indicators.arista.fj];
+          var current = this.listAristas[player.indicators.arista.fi][player.indicators.arista.fj];
           var canSet = this.listPoints[current.start.iIndex][current.start.jIndex].taken.toString() != '' && this.listPoints[current.start.iIndex][current.start.jIndex].taken.toString() == turnIndex.toString() ||
                         this.listPoints[current.end.iIndex][current.end.jIndex].taken.toString() == turnIndex.toString();
 
@@ -660,7 +658,7 @@ function Mapa() {
           for (var index = 0; index < this.ruleta.list.length; index++) {
             if (this.listRombos[this.ruleta.list[index].fi]) {
               if (this.listRombos[this.ruleta.list[index].fi][this.ruleta.list[index].fj]) {
-                const rombo = this.listRombos[this.ruleta.list[index].fi][this.ruleta.list[index].fj];
+                var rombo = this.listRombos[this.ruleta.list[index].fi][this.ruleta.list[index].fj];
                 if (this.ruleta.index != index) {
                   rombo.drawActive(!this.ruleta.opacity);
                 }
@@ -678,7 +676,7 @@ function Mapa() {
             this.ruleta.index = this.ruleta.index == 3 ? 0 : this.ruleta.index + 1;
 
             if (this.ruleta.pivot >= 30) {
-              const that = this;
+              var that = this;
               setTimeout(function() {
                 that.ruleta.type = 'asign';
               }, 2000);
@@ -719,12 +717,15 @@ function Mapa() {
       }
     },
     printAll: function() {
-      this.listRombos.map(function(rombos) {
-        rombos.map(function(rombo) {
-          rombo.draw();
-        });
-      });
-      const list = this.listPoints;
+      for (var ro = 0; ro < this.listRombos.length; ro++) {
+        for (var rom = 0; rom < this.listRombos[ro].length; rom++) {
+          this.listRombos[ro][rom].draw();
+          
+        }
+        
+      }
+      
+      var list = this.listPoints;
 
 
       this.spinAnimation();
@@ -880,14 +881,14 @@ function Mapa() {
       }
     },
     areValidate: function(listAround) {
-      const result = {
+      var result = {
         good: [],
         bad: [],
       };
       for (var index = 0; index < listAround.length; index++) {
         if (this.listRombos[listAround[index].fi]) {
           if (this.listRombos[listAround[index].fi][listAround[index].fj]) {
-            const rombo = this.listRombos[listAround[index].fi][listAround[index].fj];
+            var rombo = this.listRombos[listAround[index].fi][listAround[index].fj];
             if (rombo.resource.type !== 'dessert') {
               result.good.push(index);
             } else {
@@ -903,8 +904,8 @@ function Mapa() {
       return result;
     },
     getResources: function(fi, fj, back) {
-      const listAround = this.listPoints[fi][fj].getAround();
-      const result = this.areValidate(listAround);
+      var listAround = this.listPoints[fi][fj].getAround();
+      var result = this.areValidate(listAround);
 
       if (result.good.length < 4) {
         if (this.ruleta==null) {
@@ -949,12 +950,12 @@ function Mapa() {
           ResourcesController([message]);
 
           // console.log(listresources)
-          this.ruleta.type='asign_animation';
-          this.asignAnimation={
-            player: turnIndex,
-            list: listasignanimation,
-            back: back,
-          };
+          this.setAsignAnimation({
+            turnIndex,
+            listasignanimation,
+            back,
+          });
+          
           // console.log(turnIndex)
           /* if (back) {
                     BackTurno()
@@ -1004,12 +1005,11 @@ function Mapa() {
               }),
             };
             ResourcesController([message]);
-            this.ruleta.type='asign_animation';
-            this.asignAnimation={
-              player: turnIndex,
-              list: listasignanimation,
-              back: back,
-            };
+            this.setAsignAnimation({
+              turnIndex,
+              listasignanimation,
+              back,
+            });
             /* this.ruleta = null
 
                         if (back) {
@@ -1024,14 +1024,14 @@ function Mapa() {
     },
     asignResources: function(val) {
       // var tabs = ["left", "right", "up", "down"]
-      const response = this.findNumbers(val);
-      const result = {};
+      var response = this.findNumbers(val);
+      var result = {};
       PlayersDetails.map(function(playerItem) {
         result[playerItem.name] = {};
       });
       // console.log(response)
-      const listValidate = this.listPoints;
-      const elements = response.filter(function(item) {
+      var listValidate = this.listPoints;
+      var elements = response.filter(function(item) {
         return listValidate[item.point.iIndex][item.point.jIndex].taken.toString() != '';
       });
       // console.log(eleme)
@@ -1046,9 +1046,9 @@ function Mapa() {
           }
         }
       });
-      const messageArray = [];
+      var messageArray = [];
       Entries(result).map(function(value) {
-        const newMessage = {
+        var newMessage = {
           name: value[0],
           resource: Entries(value[1]).map(function(item) {
             return {
@@ -1064,10 +1064,10 @@ function Mapa() {
       PaseTurno();
     },
     findNumbers: function(val) {
-      const listOrigin = [];
-      const listRequest = [];
-      const tabs = ['left', 'right', 'up', 'down'];
-      const knight = this.knight;
+      var listOrigin = [];
+      var listRequest = [];
+      var tabs = ['left', 'right', 'up', 'down'];
+      var knight = this.knight;
       this.listRombos.map(function(rombos) {
         rombos.map(function(rombo) {
           if (rombo.number.tag == val &&(rombo.iIndex!=knight.iIndex ||rombo.jIndex!=knight.jIndex)) {
@@ -1086,7 +1086,14 @@ function Mapa() {
       });
       return listRequest;
     },
-
+    setAsignAnimation:function(data){
+      this.ruleta.type='asign_animation';
+      this.asignAnimation={
+        player: data.turnIndex,
+        list: data.listasignanimation,
+        back: data.back,
+      };
+    }
   };
 }
 
@@ -1100,7 +1107,7 @@ function Dice() {
         push();
         fill('white');
         rectMode(CENTER);
-        const size = paddingLeft * 0.4;
+        var size = paddingLeft * 0.4;
         rect(paddingLeft * 0.25, heightCanvas / 2, paddingLeft * 0.4, paddingLeft * 0.4, paddingLeft * 0.02);
         rect(paddingLeft * 0.70, heightCanvas / 2, paddingLeft * 0.4, paddingLeft * 0.4, paddingLeft * 0.02);
         this.drawPoints(this.value[0], true);
@@ -1109,8 +1116,8 @@ function Dice() {
       }
     },
     drawPoints: function(value, first) {
-      const size = paddingLeft * 0.4;
-      const center = first ? paddingLeft * 0.25 : paddingLeft * 0.70;
+      var size = paddingLeft * 0.4;
+      var center = first ? paddingLeft * 0.25 : paddingLeft * 0.70;
       if (value == 1) {
         fill('black');
         ellipse(center, heightCanvas / 2, size / 7);
@@ -1157,7 +1164,7 @@ function Dice() {
         if (this.value[0] + this.value[1] != 7) {
           mapa.asignResources(this.value[0] + this.value[1]);
         } else {
-          const message = {
+          var message = {
             name: PlayersDetails[turnIndex].name,
           };
           KnightController(message);
