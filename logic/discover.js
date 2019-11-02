@@ -1,22 +1,15 @@
 var listAvaliableServers = []
 
 function entablishConnection(index) {
-	//$(location).attr('href', "./?url=" + ipConnected);
-	//
-	//alert(1)
-	connect(listAvaliableServers[index])
-	//clearInterval(intervalReload)
-	ipConnected = listAvaliableServers[index]
+	var ipConnected = listAvaliableServers[index]
 	var findIp = ipConnected.indexOf(':8080');
 	var IpSelected = ipConnected[findIp - 2] == '.' ? ipConnected.substr(findIp - 1, 1) :
 		ipConnected[findIp - 3] == '.' ? ipConnected.substr(findIp - 2, 2) :
 		ipConnected[findIp - 4] == '.' ? ipConnected.substr(findIp - 3, 3) :
 		'0'
-	//$(location).attr('href', location.href.substr(0, location.href.length - 10) + "Inkatan/SelectPlayers/index.html?url=" + ipConnected + "&ipSelected=" + IpSelected);
-	//onsole.log(location.href.substr(0, location.href.length - 10)+"inkatan/SelectPlayers/index.html?url=" + ipConnected + "&ipSelected=" + IpSelected);
-	location.replace(location.href.substr(0, location.href.length - 10)+"inkatan/SelectPlayers/index.html?url=" + ipConnected + "&ipSelected=" + IpSelected)
-	//location.replace(location.href.substr(0, location.href.length - 10)+"gestureexample/main.html?url=" + ipConnected + "&ipSelected=" + IpSelected)
-	//$(location).attr('href', "./Inkatan/SelectPlayers/?url=" + ipConnected + "&ipSelected=" + IpSelected);
+		return ipConnected;
+	//location.replace(location.href.substr(0, location.href.length - 10)+"inkatan/SelectPlayers/index.html?url=" + ipConnected + "&ipSelected=" + IpSelected)
+	
 }
 
 function availableServersToDiv(server) {
@@ -35,7 +28,7 @@ function findServers() {
 		availableServersToDiv,
 		null)
 }
-
+Synapse.stop
 //#region STARS
 
 //#endregion

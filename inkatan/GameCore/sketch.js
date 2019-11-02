@@ -1,16 +1,18 @@
+console.log("HI")
 var widthCanvas = $(window).width();
 var heightCanvas = $(window).height();
-
+var font;
 var colorsPointer = ['rgba(9, 82, 9,0.7)', 'rgba(171, 154, 31,0.7)', 'rgba(126, 34, 140,0.7)', 'rgba(140, 89, 34,0.7)']
 var colorsPointerTotal = ['rgba(9, 82, 9,1)', 'rgba(171, 154, 31,1)', 'rgba(126, 34, 140,1)', 'rgba(140, 89, 34,1)']
 var colorsPointerOpacity = ['rgba(9, 82, 9,0.4)', 'rgba(171, 154, 31,0.4)', 'rgba(126, 34, 140,0.4)', 'rgba(140, 89, 34,0.4)']
-
+var colorsPointerLight =['rgba(140, 200, 140,1)', 'rgba(220, 210, 170,1)', 'rgba(210, 140, 230,1)', 'rgba(220, 170, 150,1)']
 var activeTurn = true
-var mapDelimit = widthCanvas * 0.60
-var paddingLeft = widthCanvas * 0.40 / 2
+var mapDelimit = widthCanvas * 0.72
+var paddingLeft = widthCanvas * 0.28 / 2
 var centerMapH = heightCanvas / 2
 var radio = mapDelimit / 12
-var paddingHeight = centerMapH - (radio * 5)
+var paddingHeight = centerMapH - (radio * 5*0.68 )
+var dices = [];
 var mapa = Mapa()
 var game = Game()
 var dice = Dice()
@@ -20,11 +22,68 @@ var PlayersDetails = []
 var cards = Cards()
 var modal = Modal()
 var backImage;
+var bloque;
+var houseBloque;
+var bloquePuerto;
+var camino;
+var camino2;
+var caminos;
+var camino_b;
+var casas;
+var bloqueActivo;
+var userIcon;
+var userActiveIcon;
+var dado = true;
+var gamestarted=false;
+var desierto;
+var spritDice;
+var userDisabled;
+var mostrarAsignacion =false;
+var asignaciones = [{"name":"Jesus","resource":[{"name":"stone","amount":1}]},{"name":"Raphael","resource":[{"name":"stone","amount":1},{"name":"stone","amount":1},{"name":"stone","amount":1}]}];
+var asignacionesContador = 0;
 // PRELOAD IMAGES
  function preload() {
     mapa.preload()
     mapa.resources.preload()
-    backImage=loadImage('assets/background.jpg');
+    backImage=loadImage('./inkatan/GameCore/assets/background.jpg');
+    bloque=loadImage('./inkatan/GameCore/assets/bloque.png');
+    bloquePuerto=loadImage('./inkatan/GameCore/assets/bloquePuerto.png');
+    houseBloque=loadImage('./inkatan/GameCore/assets/houses/1.png');
+    spritDice = [loadImage('./inkatan/GameCore/assets/dices/sprite1.png'),
+    loadImage('./inkatan/GameCore/assets/dices/sprite2.png'),
+    loadImage('./inkatan/GameCore/assets/dices/sprite3.png'),
+    loadImage('./inkatan/GameCore/assets/dices/sprite2.png')]
+    dices=[loadImage('./inkatan/GameCore/assets/dices/dice1.png'),
+    loadImage('./inkatan/GameCore/assets/dices/dice2.png'),
+    loadImage('./inkatan/GameCore/assets/dices/dice3.png'),
+    loadImage('./inkatan/GameCore/assets/dices/dice4.png'),
+    loadImage('./inkatan/GameCore/assets/dices/dice5.png'),
+    loadImage('./inkatan/GameCore/assets/dices/dice6.png')];
+    casas = [
+        {a:loadImage('./inkatan/GameCore/assets/casas/1a.png'),b:loadImage('./inkatan/GameCore/assets/casas/1b.png')},
+        {a:loadImage('./inkatan/GameCore/assets/casas/2a.png'),b:loadImage('./inkatan/GameCore/assets/casas/2b.png')},
+        {a:loadImage('./inkatan/GameCore/assets/casas/3a.png'),b:loadImage('./inkatan/GameCore/assets/casas/3b.png')},
+        {a:loadImage('./inkatan/GameCore/assets/casas/4a.png'),b:loadImage('./inkatan/GameCore/assets/casas/4b.png')},
+    ]
+    desierto=loadImage('./inkatan/GameCore/assets/dessert/desierto.png')
+    caminos = [
+        {left: loadImage('./inkatan/GameCore/assets/caminos/1a.png'),right:loadImage('./inkatan/GameCore/assets/caminos/1b.png')},
+        {left: loadImage('./inkatan/GameCore/assets/caminos/2a.png'),right:loadImage('./inkatan/GameCore/assets/caminos/2b.png')},
+        {left: loadImage('./inkatan/GameCore/assets/caminos/3a.png'),right:loadImage('./inkatan/GameCore/assets/caminos/3b.png')},
+        {left: loadImage('./inkatan/GameCore/assets/caminos/4a.png'),right:loadImage('./inkatan/GameCore/assets/caminos/4b.png')},
+    ]
+    
+    caminos_b = [
+        {left: loadImage('./inkatan/GameCore/assets/caminos_b/1a.png'),right:loadImage('./inkatan/GameCore/assets/caminos_b/1b.png')},
+        {left: loadImage('./inkatan/GameCore/assets/caminos_b/2a.png'),right:loadImage('./inkatan/GameCore/assets/caminos_b/2b.png')},
+        {left: loadImage('./inkatan/GameCore/assets/caminos_b/3a.png'),right:loadImage('./inkatan/GameCore/assets/caminos_b/3b.png')},
+        {left: loadImage('./inkatan/GameCore/assets/caminos_b/4a.png'),right:loadImage('./inkatan/GameCore/assets/caminos_b/4b.png')},
+    ]
+    bloqueActivo=loadImage('./inkatan/GameCore/assets/bloqueActivo.png');
+    userIcon=loadImage('./inkatan/GameCore/assets/user.png');
+    userDisabled=loadImage('./inkatan/GameCore/assets/userDisabled.png');
+    userActiveIcon=loadImage('./inkatan/GameCore/assets/userReady.png');
+    font = loadFont('./inkatan/GameCore/font.otf');
 }
 
 //CALL CARD
@@ -33,35 +92,50 @@ var backImage;
 }  
 //SETUP MAP AND PLAYERS
 function setup() {
-    var canvas = createCanvas(widthCanvas, heightCanvas);
-    canvas.parent('#canvas')
+    if(gamestart){
+    console.log("HERE");
+    createCanvas(widthCanvas, heightCanvas);
+    //canvas.parent('#canvas')
     frameRate(1000);
     background(100, 180, 100)
     mapa.setup()
     setPlayer() 
-    setStateListeners();
+    GamesetStateListeners();
+    textFont(font)
+    console.log("finish");
+    gamestarted=true;
+}
 }
 
 //DRAW
 function draw() {
+    if(gamestarted){
     background(100, 180, 100)
     image(backImage, 0, 0, widthCanvas, heightCanvas)
      mapa.printAll()
-    mapa.printObjects(PlayersDetails)
+    //mapa.printObjects(PlayersDetails)
     game.Game(mapa, PlayersDetails)
-    showPointer()
+    //showPointer()
+    playersInformation();
     modal.draw()
-    text(frameCount, 10, 10); 
+}
+    //menu()
+   // text(frameCount, 10, 10); 
 }
 
 //SHOW MAP POINTER
-function showPointer() {
+function showPointer(index) {
     switch (mapa.select) {
         case 'vertice':
+            //print(parseInt(PlayersDetails[turnIndex].indicators.vertice.fi/2))
+            //print(index)
+            if(PlayersDetails[turnIndex].indicators.vertice.fi==index)
             mapa.printPoint(PlayersDetails[turnIndex].indicators.vertice.fi,
                 PlayersDetails[turnIndex].indicators.vertice.fj)
+                
             break;
         case 'arista':
+            if(PlayersDetails[turnIndex].indicators.arista.fi==index)
             mapa.printArista(PlayersDetails[turnIndex].indicators.arista.fi,
                 PlayersDetails[turnIndex].indicators.arista.fj)
             break
@@ -74,6 +148,7 @@ function showPointer() {
 
 //TEST ACTIONS
 function keyPressed() {
+    console.log(key);
     if (keyCode === DOWN_ARROW) {
         mapa.move(PlayersDetails[turnIndex], 'down')
     } else if (keyCode === UP_ARROW) {
@@ -87,7 +162,11 @@ function keyPressed() {
     } else if (key === 'q') {
         mapa.changeSelect()
     } else if (key === 'd') {
-        dice.throwDice()
+        if(dado){
+           dice.throwDice() 
+           dado=false
+        }
+        
     } else if (key === 'c') {
         //alert(turnIndex)
         cards.action(card_names.TUCUY, turnIndex)
@@ -98,11 +177,23 @@ function keyPressed() {
     } else if (key === 'p') {
         //alert(turnIndex)
         IsPort(0)
+    }else if (key === 'y') {
+        //alert(turnIndex)
+        PaseTurno()
     }else if (key === 'b') {
         //alert(turnIndex)
         SetBuildMode({
             player:PlayersDetails[0].name,
-            type:'i',
+            type:'h',
+            amount:1
+        })
+        
+    }
+    else if (key === 't') {
+        //alert(turnIndex)
+        SetBuildMode({
+            player:PlayersDetails[0].name,
+            type:'t',
             amount:1
         })
         
@@ -110,6 +201,7 @@ function keyPressed() {
 }
 function SetBuildMode(data){
     console.log(data)
+    if(data.type=='h'||data.type=='t'){
     glob.setCurrentState("BUILD");
     game.data={
         player:mapPlayers[data.player],
@@ -122,6 +214,7 @@ function SetBuildMode(data){
     //alert(data.type=='h'? "vertice": 'arista')
     mapa.select=data.type=='h'||data.type=='i'? "vertice": 'arista'
     console.log(game)
+}
 }
 //CALL MOVE FUNCTIONS
 function Move(val) {
@@ -147,7 +240,7 @@ function Add(obj) {
 
 //CONFIGURE PLAYERS
 function setPlayer() {
-    var players = ActualParameters.namesPlayers.split(',')
+    var players = ActualParameters.namesPlayers
     console.log(players);
     players.map(function (player, i) {
         var specialcards={}
@@ -161,12 +254,13 @@ function setPlayer() {
             colorTotal: colorsPointerTotal[i],
             color: colorsPointer[i],
             colorOpacity: colorsPointerOpacity[i],
+            colorLight:colorsPointerLight[i],
             houses: [],
             ways: [],
-            avatar: i==0?{posx:widthCanvas*0.1,posy:heightCanvas*0.2}
-            :i==1?{posx:widthCanvas*0.1,posy:heightCanvas*0.8}
-            :i==2?{posx:widthCanvas*0.9,posy:heightCanvas*0.2}
-            :{posx:widthCanvas*0.9,posy:heightCanvas*0.8},
+            avatar: i==0?{posx:widthCanvas*0.1,posy:heightCanvas*0.1}
+            :i==1?{posx:widthCanvas*0.1,posy:heightCanvas*0.9}
+            :i==2?{posx:widthCanvas*0.9,posy:heightCanvas*0.1}
+            :{posx:widthCanvas*0.9,posy:heightCanvas*0.9},
             resources: {
                 stone: 0,
                 wool: 0,
@@ -184,7 +278,9 @@ function setPlayer() {
                 }
             },
             specialcards,
-            longRoad: 0
+            longRoad: 0,
+            points:0,
+            expansion:0
         })
     })
     console.log(PlayersDetails)
@@ -381,7 +477,10 @@ function IsPort(playerName){
             }
         })
     } 
-    sendMessageServer({action:"PUERTO",puertos:ports, player:PlayersDetails[player].name})
+    setTimeout(function(){
+        sendMessageServer({action:"PUERTO",puertos:ports, player:PlayersDetails[player].name})
+    },1000);
+    
 }
 function ExchangeOut(data){
     
@@ -389,15 +488,17 @@ function ExchangeOut(data){
         player: data.player,
         resource:[{
             name: data.input,
-            amount: -4,
+            amount: -1*data.cantidad,
         },{
             name: data.output,
             amount: 1,
         }]
     }
-    ResourcesController([value])
+    modal.showUp(data.player+" intercambio "+ data.cantidad+ " de "+(mapa.resources.translation[data.input])+" por "+ 1+ " de "+(mapa.resources.translation[data.output]), 2);
+            
+    ResourcesController([value],false)
 }
-function ResourcesController(data){ //[{name,list}]
+function ResourcesController(data,send){ //[{name,list}]
     for (var i = 0; i < data.length; i++) {
         var name = data[i].name
         var resource = data[i].resource
@@ -413,7 +514,9 @@ function ResourcesController(data){ //[{name,list}]
             action:'resources',
             resource:resource
         }
-        sendMessageServer(message)
+        if(send){
+            sendMessageServer(message)
+        }
     }
 }
 function SpecialCardsController(data){ //[{name,list}]
@@ -444,8 +547,8 @@ function KnightController(data){ //{name}
     sendMessageServer(message)
     game.ChangeStatus('KNIGHT')
     glob.setCurrentState("BUILD");
-    PlayersDetails[mapPlayers[name]].indicators.rombo.fi = mapa.knight.iIndex
-    PlayersDetails[mapPlayers[name]].indicators.rombo.fj = mapa.knight.jIndex
+    PlayersDetails[mapPlayers[data.name]].indicators.rombo.fi = mapa.knight.iIndex
+    PlayersDetails[mapPlayers[data.name]].indicators.rombo.fj = mapa.knight.jIndex
 }
 function CancelBuild(){
     game.data={}
@@ -455,7 +558,7 @@ function CancelBuild(){
     mapa.select=''
 }
 
-function setStateListeners(){
+function GamesetStateListeners(){
     
     glob.addState("FIRSTROUND");
     glob.addState("TURN");
@@ -472,14 +575,25 @@ function setStateListeners(){
     });
     //TURN
     glob.addListenertoState("TURN", "DICE", function (obj) {
-		ThrowDice(obj)
+        if(dado){
+          ThrowDice(obj)  
+          dado=false;
+        } 
     });
     glob.addListenertoState("TURN", "BUILD", function (obj) {
         obj.amount=1
 		SetBuildMode(obj)
     });
+    glob.addListenertoState("TURN", "TURNO", function (obj) {
+        if(obj.player==PlayersDetails[turnIndex].name){
+            PaseTurno()
+        }
+    });
     glob.addListenertoState("TURN", "PUERTO", function (obj) {
 		IsPort(obj.player)
+    });
+    glob.addListenertoState("TURN", "INTERCAMBIO", function (obj) {
+		ExchangeOut(obj)
     });
     glob.addListenertoState("TURN", "SPECIALCARD", function (obj) {
         print("hola")
@@ -497,6 +611,92 @@ function setStateListeners(){
 		CancelBuild()
     });
     
+}
+
+function playersInformation(){
+    //console.log(widthCanvas)
+    push() 
+    noStroke()
+    ellipseMode(CORNER)
+    var scale = widthCanvas*0.0008
+    var coords = [
+        {posx:scale*20,posy:scale*20},
+        {posx:scale*20,posy:heightCanvas-(scale*100)},
+        {posx:widthCanvas,posy:scale*20},
+        {posx:widthCanvas,posy:heightCanvas-(scale*100)},
+    ]
+    
+    textSize(scale*22);
+    for (var i = 0; i < PlayersDetails.length; i++) {
+        imageMode(CORNER)
+        push()
+        //if(i!=turnIndex)
+        //tint(255, 127);
+
+        fill(i!=turnIndex?PlayersDetails[i].colorLight: PlayersDetails[i].colorTotal);
+        noStroke()
+        var posx =coords[i].posx
+        var posy =coords[i].posy
+        var name = PlayersDetails[i].name;
+        name = name.length>8?name.substr(0,7)+"...":name;
+        if(i>1){
+            rect(posx-(scale*225),posy+(scale*18),(scale*130),(scale*44),scale*5)
+            ellipse(posx-(scale*107), posy-(scale*7), scale*94)
+            ellipse(posx-(scale*107), posy-(scale*7), scale*94)
+
+            image(turnIndex==i?userActiveIcon: userDisabled,posx-(scale*100),posy,scale*80,scale*80);
+            textAlign(CENTER, CENTER);
+            fill('white');
+            text(name, posx-(scale*163),posy+(scale*37))
+            if (ActualParameters.gamemode=='expansion') {
+                text((PlayersDetails[i].expansion.toFixed(1))+"/"+ActualParameters.gamevalue+ "%", posx-(scale*163),posy+(scale*37)+((i%2==0?1:-1.1)*scale*36))
+            }else{
+                text(PlayersDetails[i].points+"/"+ActualParameters.gamevalue+ " puntos", posx-(scale*163),posy+(scale*37)+((i%2==0?1:-1.1)*scale*36))
+            }
+            textAlign(LEFT, CORNER);
+            if(mostrarAsignacion){
+                for (var j = 0; j < asignaciones[i].resource.length; j++) {
+                    imageMode(CENTER)
+                    image((mapa.resources.assets[asignaciones[i].resource[j].name].icon),posx+scale*30-(scale*100),posy-(asignaciones[i].resource[j].name=="wool"?0:scale*7)+(scale*28*j)+(i%2==0?(scale*110):-(scale*10+scale*20*asignaciones[i].resource.length)),asignaciones[i].resource[j].name=="quinoa"?scale*20:scale*28,scale*28)
+                    text(("x"+asignaciones[i].resource[j].amount),posx+scale*50-(scale*100),posy+(scale*28*j)+(i%2==0?(scale*110):-(scale*10+scale*20*asignaciones[i].resource.length)));
+                    //text((mapa.resources.translation[asignaciones[i].resource[j].name]+" x"+asignaciones[i].resource[j].amount),posx-(scale*100),posy+(scale*20*j)+(i%2==0?(scale*110):-(scale*10+scale*15*asignaciones[i].resource.length)));
+                }
+                
+            }
+            
+            
+        }else{
+            rect(posx+(scale*75),posy+(scale*18),(scale*130),(scale*44),(scale*5))
+            ellipse(posx-(scale*7), posy-(scale*7), (scale*94))
+            image(turnIndex==i?userActiveIcon: userDisabled,posx,posy,(scale*80),(scale*80));
+            fill('white');
+            
+            textAlign(CENTER, CENTER);
+            
+            text(name, posx+(scale*140),posy+(scale*37))
+            if (ActualParameters.gamemode=='expansion') {
+                text(PlayersDetails[i].expansion.toFixed(1)+"/"+ActualParameters.gamevalue+ "%", posx+(scale*140),posy+(scale*37)+((i%2==0?1:-1.1)*scale*36))
+            }else{
+                text(PlayersDetails[i].points+"/"+ActualParameters.gamevalue+ " puntos", posx+(scale*140),posy+(scale*37)+((i%2==0?1:-1.1)*scale*36))
+            }
+            textAlign(LEFT, CORNER);
+            if(mostrarAsignacion){
+                
+                for (var j = 0; j < asignaciones[i].resource.length; j++) {
+                    //str+=(mapa.resources.translation[asignaciones[i].resource[j].name]+" x"+asignaciones[i].resource[j].amount+"\n")
+                    imageMode(CENTER)
+                    image((mapa.resources.assets[asignaciones[i].resource[j].name].icon),posx+scale*30,posy-(asignaciones[i].resource[j].name=="wool"?0:scale*7)+(scale*28*j)+(i%2==0?(scale*110):-(scale*10+scale*20*asignaciones[i].resource.length)),asignaciones[i].resource[j].name=="quinoa"?scale*20:scale*28,scale*28)
+                    text(("x"+asignaciones[i].resource[j].amount),posx+scale*50,posy+(scale*28*j)+(i%2==0?(scale*110):-(scale*10+scale*20*asignaciones[i].resource.length)));
+                }
+                
+                //text(str,posx,posy+(i%2==0?(scale*110):-(scale*10+scale*15*asignaciones[i].resource.length)));
+            }
+            
+            
+        }
+        pop()
+    }
+    pop()
 }
 
 

@@ -12,8 +12,18 @@ var dots = setInterval(function () {
 var indexScroll = 0;
 var indexServer = 0;
 var isBtnReload = false;
+var ActualParameters = {};
+var gamestart = false;
+var glob = new GlobalState();
+
+var lenPlayers = 0
+var numberPlayers = 0
+var ready = [];
 //SMARTV CONTROLLER ACTIONS
-$(document).keydown(function (e) {
+ $(document).ready(function () {
+    //testflow()
+}); 
+/* $(document).keydown(function (e) {
     if (listAvaliableServers.length != 0) {
         console.log(e);
         switch (e.keyCode) {
@@ -45,7 +55,7 @@ $(document).keydown(function (e) {
                 break;
         }
     }
-});
+}); */
 //TOGGLE RELOAD BUTTON
 function ChangeMode(toggle) {
     if (toggle) {
@@ -90,18 +100,282 @@ function found(url, indexElement) {
     clearInterval(dots);
     var listContainer = $("#list");
     $("#searching").remove();
+    
     listContainer.addClass("listServers");
-    listContainer.append("<div id=\"server" + indexElement + "\" class=\"itemServer" + (indexElement == 0 ? " Selected" : "") + "\">\n      " + url + "\n      </div>");
-}
-//TESTS
-function test() {
-    /*var newh = [location.href.substr(0, location.href.length - 10),"inkatan/GameCore/index.html?namesPlayers=Raphael,Jesus&url=ws://192.168.0.1&numberPlayers=2"]
-    console.log(newh)
-    var url = newh[0]
-    console.log(url.concat(newh[1]))
-    console.log(url);*/
-    location.replace(location.href.substr(0, location.href.length - 10)+"inkatan/GameCore/index.html?namesPlayers=Raphael,Jesus&url=ws://192.168.0.1&numberPlayers=2")
-   // $(location).attr("href", location.href.substr(0, location.href.length - 10) +
-     //   "inkatan/Gamecore/index.html?namesPlayers=Raphael,Jesus&url=ws://192.168.0.1&numberPlayers=2");
+    var findIp = url.indexOf(':8080');
+    var IpSelected = url[findIp - 2] == '.' ? url.substr(findIp - 1, 1) :
+    url[findIp - 3] == '.' ? url.substr(findIp - 2, 2) :
+    url[findIp - 4] == '.' ? url.substr(findIp - 3, 3) :
+		'0'
+    listContainer.append("<div onclick=\"onclickServer("+indexElement+");\"  id=\"server" + indexElement + "\" class=\"itemServer" + (indexElement == 0 ? " Selected" : "") + "\">\n      Sala " + IpSelected + "\n      </div>");
 }
 
+function onclickServer(value){
+    ActualParameters.url = entablishConnection(value);
+    connect(ActualParameters.url);
+    $("#screen1").css("display", "none");
+    $("#screen2").css("display", "flex");
+    $("#image1").css("display", "none");
+    $("#image2").css("display", "flex");
+    setStateListeners();
+	var data=ActualParameters.url.substr(5,ActualParameters.url.length-11)
+    var qr = qrcode(4, 'M');
+    console.log("hola")
+  	qr.addData(data);
+	  qr.make();
+	 var wd=$(window).height();
+  	document.getElementById('token').innerHTML = qr.createImgTag(parseInt(wd/200),0);
+}
+
+//SCREEN2
+
+var playersIcons = [
+	'<div id="player1" class="itemPlayer"><div class="playerNumber">1</div><div class="avatar"><img class="user" src="../../assets/icons/user.png" /></div><div id="playerName1" class="playerName">Esperando...</div></div>',
+	'<div id="player2" class="itemPlayer disabled"><div class="playerNumber">2</div><div class="avatar" style="background: rgb(171, 154, 31)"><img class="user" src="../../assets/icons/user.png" /></div><div id="playerName2" class="playerName">Esperando...</div></div>',
+	'<div id="player3" class="itemPlayer disabled"><div class="playerNumber">3</div><div class="avatar" style="background: rgb(126, 34, 140)"><img class="user" src="../../assets/icons/user.png" /></div><div id="playerName3" class="playerName">Esperando...</div></div>',
+	'<div id="player4" class="itemPlayer disabled"><div class="playerNumber">4</div><div class="avatar" style="background: rgb(140, 89, 34)"><img class="user" src="../../assets/icons/user.png" /></div><div id="playerName4" class="playerName">Esperando...</div></div>'
+]
+
+function setPlayers(valueCursor) {
+	$("#messageWaiting").remove();
+	$("#logo").remove();
+	$("#titulo").css("display","block");
+	for (var i = 0; i < valueCursor; i++) {
+		$("#playersContainer").append(playersIcons[i]);
+		tasks.push(
+			{name: ("Esperando al jugador #"+i), status:false},
+		)
+		ready.push(false)
+	}
+	tasks.push(
+		{name: "Esperando la seleccion de modo de juego", status:false},
+	)
+	tasks.push(
+		{name: "Esperando la seleccion del nivel de modo de juego", status:false},
+	)
+	numberPlayers = valueCursor
+}
+
+var listNames = []
+var tasks=[]
+function changeName(name) {
+	if (lenPlayers < numberPlayers) {
+		tasks[lenPlayers].status=true
+		tasks[lenPlayers].name=name+" conectado"
+		lenPlayers++;
+		$('#playerName' + lenPlayers).text(name)
+		$('#playerName' + lenPlayers).addClass("focus");
+		listNames.push(name)
+		$('#player' + lenPlayers).removeClass("disabled")
+		setReady(lenPlayers - 1)
+	}
+	console.log(tasks)
+	sendMessageServer({
+		action:"CONNECTION",
+		name: tasks[lenPlayers-1].name
+	})
+}
+var gameStarting = false;
+var readyIndex = 0;
+
+function setReady(index) {
+	var toChange = ready[index]
+	ready[index] = !toChange
+	//alert('55')
+	if (toChange) {
+		$('#player' + (index + 1) + ' .avatar .user').attr('src', '../../assets/icons/user.png')
+	} else {
+		$('#player' + (index + 1) + ' .avatar .user').attr('src', '../../assets/icons/userReady.png')
+	}
+	readyIndex++;
+	var noMoreReady = true;
+	this.ready.map(function (itemReady) {
+		if (!itemReady) {
+			noMoreReady = false
+		}
+    })
+    
+	if (noMoreReady) {
+		gameStarting = true
+		//alert(1)
+		var strNames = '';
+		listNames.map(function (item) {
+			strNames += ',' + item
+		})
+		console.log("holas");
+		sendMessageServer({
+			action:"ALLREADY"
+		})
+        ActualParameters.namesPlayers=listNames;
+        ActualParameters.numberPlayers=numberPlayers;
+        console.log(ActualParameters);
+        setTimeout(function () {
+			SetGameModeScreen();
+		}, 500)
+        
+		/*setTimeout(function () {
+			location.replace(location.href.replace("SelectPlayers","GameMode")+"&namesPlayers="+strNames.substr(1)+"&numberPlayers="+numberPlayers)
+			gameStarting = false
+		}, 100)*/
+	}
+}
+
+function setStateListeners(){
+	glob.addState("LISTPLAYERS");
+	glob.setCurrentState("LISTPLAYERS");
+	glob.addListenertoState("LISTPLAYERS", "CANTIDAD", function (obj) {
+		setPlayers(obj.value)
+		glob.addListenertoState("LISTPLAYERS", "AGREGAR", function (obj) {
+			changeName(obj.name)
+		});
+	});
+}
+function SetGameModeScreen(){
+    $("#screen2").css("display", "none");
+    $("#screen3").css("display", "flex");
+    $("#image2").css("display", "none");
+    $("#image3").css("display", "flex");
+    GameModeSetStateListeners();
+}
+
+function GameModeSetStateListeners(){
+	glob.addState("GAMEMODE");
+	glob.setCurrentState("GAMEMODE");
+	glob.addListenertoState("GAMEMODE", "MODE", function (obj) {
+        console.log("xxx")
+		sendMessageServer({
+			action:"CONNECTION",
+			name: "Modo "+(obj.mode=="points"?"puntos":"expansion")+" seleccionado"
+        })
+        $("#screen3").css("display", "none");
+        if(obj.mode=="points"){
+            
+            $("#screen5").css("display", "flex");
+        }else{
+            $("#screen4").css("display", "flex");
+        }
+        GameValueSetStateListeners(obj.mode)
+		//location.replace(location.href.replace("GameMode","Mode"+(obj.mode=="points"?"Points":"Expansion")))
+		
+	});
+}
+
+var pointsValue = 5
+
+function modificarPuntos(mas) {
+
+	document.getElementById('pointsValue').innerHTML = mas;
+	sendMessageServer({
+		action:"CONNECTION",
+		name: "Inicia el juego"
+	})
+	setTimeout(function () {
+		sendMessageServer({
+			action:"STARTGAME"
+		})
+	}, 100)
+}
+function modificarExpansion(mas) {
+	document.getElementById('percentValue').innerHTML = mas + '%';
+	sendMessageServer({
+		action:"CONNECTION",
+		name: "Inicia el juego"
+	})
+	
+	 setTimeout(function () {
+		sendMessageServer({
+			action:"STARTGAME"
+		})
+		
+		gameStarting = false
+	}, 100) 
+
+}
+function GameValueSetStateListeners(mode){
+        glob.addState("GAMEVALUE");
+        glob.setCurrentState("GAMEVALUE");
+        if(mode=="points"){
+            glob.addListenertoState("GAMEVALUE", "VALUE", function (obj) {
+                ActualParameters.gamemode="points";
+                ActualParameters.gamevalue=obj.value
+                modificarPuntos(obj.value);
+                setTimeout(function(){console.log(ActualParameters);
+                    $("#screen4").css("display", "none");
+                    $("#screen5").css("display", "none");
+                    $("#image3").css("display", "none");
+                   // $("#image4").css("display", "flex");
+                    $("#contain").css("display", "flex");
+                    gamestart=true
+                    setup()},1000)
+            });
+        }else{
+            glob.addListenertoState("GAMEVALUE", "VALUE", function (obj) {
+                ActualParameters.gamemode="expansion";
+                ActualParameters.gamevalue=obj.value
+                modificarExpansion(obj.value);
+                console.log(ActualParameters);
+                setTimeout(function(){
+                    $("#screen4").css("display", "none");
+                    $("#screen5").css("display", "none");
+
+                    $("#image3").css("display", "none");
+                    //$("#image4").css("display", "flex");
+                    $("#contain").css("display", "flex");
+                    gamestart=true
+                    setup()
+                },1000)
+                    
+                    
+            });
+        }
+        //glob.printContent();
+}
+//TEST 
+function testflow(){
+    setTimeout(function(){
+        availableServersToDiv("ws://192.168.0.6:8080")
+        setTimeout(function(){
+            onclickServer(0);
+            setTimeout(function(){
+                glob.execute({action:"CANTIDAD",value:2})
+                setTimeout(function(){
+                    glob.execute({action:"AGREGAR",name:"Jesus"})
+                    setTimeout(function(){
+                        glob.execute({action:"AGREGAR",name:"Raphael"})
+                        
+                        setTimeout(function(){
+                             glob.execute({action:"MODE",mode:"expansion"})
+                            setTimeout(function(){
+                                glob.execute({action:"VALUE",value:300})
+                            },800) 
+                        },1000)
+                    },100)
+                },100)
+            },100)
+        },100)
+    },100)
+}
+
+function testflow2(){
+    setTimeout(function(){
+        availableServersToDiv("ws://192.168.0.6:8080")
+        setTimeout(function(){
+            onclickServer(0);
+            setTimeout(function(){
+                glob.execute({action:"CANTIDAD",value:2})
+                setTimeout(function(){
+                    glob.execute({action:"AGREGAR",name:"Jesus"})
+                    setTimeout(function(){
+                        glob.execute({action:"AGREGAR",name:"Raphael"})
+                        setTimeout(function(){
+                            glob.execute({action:"MODE",mode:"points"})
+                            setTimeout(function(){
+                                glob.execute({action:"VALUE",value:3})
+                            },500)
+                        },1000)
+                    },500)
+                },500)
+            },1000)
+        },1000)
+    },1000)
+}

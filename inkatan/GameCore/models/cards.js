@@ -42,7 +42,7 @@ function Cards() {
                             amount: cant
                         }]
                     }
-                    ResourcesController([newMessage,secondMessage])
+                    ResourcesController([newMessage,secondMessage],true)
                 }
             }
             
@@ -74,7 +74,7 @@ function Cards() {
                         }]
                     }
 
-                    ResourcesController([newMessage,secondMessage])
+                    ResourcesController([newMessage,secondMessage],true)
                 }
             }
             
@@ -98,7 +98,7 @@ function Cards() {
                             amount: cant
                         }]
                     }
-                    ResourcesController([newMessage,secondMessage])
+                    ResourcesController([newMessage,secondMessage],true)
                 }
             }
             
@@ -148,7 +148,7 @@ function Cards() {
                     amount: Entries(cant).length
                 }]
             }
-            ResourcesController([message])
+            ResourcesController([message],true)
             /*var newMessage = {
                 player: PlayersDetails[player].name,
                 action: "knight"

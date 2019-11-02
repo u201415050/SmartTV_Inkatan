@@ -5,35 +5,97 @@
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="./style.css">
 	<link rel="stylesheet" href="./styles/general/styles.css">
+	<script>
+		function logs(data) {
+			console.log(data);
+		}
+	</script>
 	<script src="webOSTVjs-1.1.0/webOSTV.js" charset="utf-8"></script>
 	<script src="webOSTVjs-1.1.0/webOSTV-dev.js" charset="utf-8"></script>
-
 	<script type="text/javascript" src="./logic/jquery-1.11.0.min.js"></script>
-	<script src="./globalstate/app_2.js" charset="utf-8"></script>
+	<script src="./globalstate/app.js" charset="utf-8"></script>
 	<script src="./logic/synapse.js" charset="utf-8"></script>
 	<script src="./logic/discover.js" charset="utf-8"></script>
 	<script src="./logic/conect.js" charset="utf-8"></script>
-
-
+	<script type="text/javascript" src="./helpers/qrcode/qrcode.js"></script>
 	<script type="text/javascript" src="./app.js"></script>
+	<script type="text/javascript" src="./inkatan/GameCore/app.js"></script>
+	<script type="text/javascript" src="./p5/p5.min.js"></script>
+	<script src="./inkatan/GameCore/constants/constant.js"></script>
+	<script src="./inkatan/GameCore/models/cards.js"></script>
+	<script src="./inkatan/GameCore/models/map.js"></script>
+	<script src="./inkatan/GameCore/controller/GameController.js"></script>
+	<script src="./inkatan/GameCore/sketch.js"></script>
+
 </head>
 
 <body>
-	<img src="./assets/welcome/background.jpg" class="bgImage" />
-	<div class="container">
+	<img id="image1" src="./assets/welcome/background_l.jpg" class="bgImage" />
+	<img id="image2" src="./assets/welcome/background.jpg" class="bgImage" style="display: none;" />
+	<img id="image3" src="./assets/welcome/underground.jpg" class="bgImage" style="display: none;" />
+	<img id="image4" src="./inkatan/GameCore/assets/background.jpg" class="bgImage" style="display: none;" />
+	<div class="container" id="screen1">
 
-		<div onclick="test()" class="title">Inkatán</div>
+		<img src=" ./assets/welcome/inkatan.png" style="height: 60%;margin-bottom:5px" />
+		<div id="searching">Buscando dispositivos</div>
+
+		<div id="btnTriangle">
+			<div id="list">
+			</div>
+		</div>
 		<div id="btnReload" onclick="location.reload()" class="buttonReload">
 			Actualizar
 		</div>
-		<div id="btnTriangle">
-			<div id="searching">Buscando dispositivos</div>
+	</div>
+	<div class="container" id="screen2" style="display: none;">
+		<div class="rightTitle">
+			<div id="token"></div>
+			<p style="margin-top:1rem">Únete a la partida</p>
+		</div>
+		<img id="logo" src="./assets/welcome/inkatan.png" style="height: 60%;margin-bottom:5px" />
 
-			<div id="list">
+		<div id="titulo" class="titlePlayers" style="display: none">Jugadores</div>
+		<div id="playersContainer">
+			<div id="messageWaiting" class="messageBasic">Esperando el numero de jugadores</div>
+		</div>
+	</div>
+	<div class="container" id="screen3" style="display: none;">
+
+		<div class="titleContainer">
+			<div class="titleGamemode">Modo de Juego</div>
+		</div>
+		<div id="buttonsContainer">
+			<div class="Card">
+				<img src="../../assets/icons/expansion.png" class="imageIcon" />
 			</div>
+			<div style="width: 2rem;"></div>
+			<div class="Card">
+				<img src="../../assets/icons/puntos.png" class="imageIcon" />
 
+			</div>
+		</div>
+	</div>
+	<div class="container" id="screen4" style="display: none;">
+
+		<div class="titleContainer">
+			<div class="titleModeExpansion">% Expansión</div>
+		</div>
+		<div id="percentValue" class="percentText">
+			50%
 		</div>
 
+	</div>
+	<div class="container" id="screen5" style="display: none;">
+		<div class="titleContainer">
+			<div class="titleModeExpansion"># Puntos</div>
+		</div>
+		<div id="pointsValue" class="pointsText">
+			5
+		</div>
+
+	</div>
+	<div id="contain" class="container" style="display: none;">
+		<div id="canvas" class="canvas"></div>
 	</div>
 </body>
 

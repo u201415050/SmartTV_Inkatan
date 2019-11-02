@@ -8,16 +8,20 @@ function Vertice(iIndex, jIndex, posx, posy) {
     posy: posy,
     taken: '',
     big:false,
+    indexAnimate:26,
+    pivot:2,
     draw: function(value) {
+      var padding = this.iIndex==0?40:0;
+      var hand = (this.jIndex==0||this.jIndex==6) && this.iIndex>1 && this.iIndex<10 && this.iIndex%2==0?+radio*0.22:(this.iIndex==0?-radio*0.16:this.iIndex==1?radio*0.23: radio*0.62)
       push();
       stroke('rgba(255,255,255,0.5)');
       strokeWeight(radio * 0.05);
       fill(value ? value : PlayersDetails[turnIndex].color);
-      // textSize(32);
+      strokeWeight(2)
+      imageMode(CENTER)
+      image(casas[turnIndex].a, this.posx, this.posy-(hand), radio*0.72, radio)
       
-      ellipse(this.posx, this.posy, radio *  0.35, radio * 0.35);
-      // fill(0, 0, 0);
-      // text(this.iIndex.toString() + this.jIndex.toString(), this.posx, this.posy)
+      this.drawArrow(hand)
       pop();
     },
     getAdyacentsAristas: function() {
@@ -66,6 +70,27 @@ function Vertice(iIndex, jIndex, posx, posy) {
       }
       return listvalid;
     },
+    drawArrow: function(hand){
+      push()
+
+      if(this.indexAnimate==50){
+        this.pivot = -2;
+      }else if (this.indexAnimate==26)
+      {
+        this.pivot=2;
+      }
+      this.indexAnimate+=this.pivot
+      
+      rectMode(CENTER)
+      translate(this.posx, this.posy-hand- 70-this.indexAnimate)
+      stroke("black")
+      fill("white")
+      rect(0, 4, 9, 30);
+      triangle(0,29,8,15,-8,15);   
+      noStroke()
+      rect(0, 14, 7, 5); 
+      pop()
+    },
     getAdyacents: function() {
       if (iIndex == 10 || iIndex == 9) {
         return [{
@@ -82,6 +107,10 @@ function Vertice(iIndex, jIndex, posx, posy) {
           fj: jIndex,
         },
 
+        {
+          fi: iIndex+1,
+          fj: jIndex-1,
+        },
         {
           fi: iIndex,
           fj: jIndex,
@@ -177,42 +206,27 @@ function Vertice(iIndex, jIndex, posx, posy) {
       },
       ];
     },
-    drawPorto: function() {
-      push();
-      stroke('rgba(60,60,60,0.3)');
-      fill('rgba(100,100,100,1)');
-      rectMode(CENTER);
-      // beginShape()
-      // ellipse(this.posx, this.posy - radio * 0.25, radio * 0.50, radio * 0.50)
-      rect(this.posx + radio * 0.10, this.posy - radio * 0.10, radio * 0.50, radio * 0.50);
-      quad(this.posx - radio * 0.15, this.posy - radio * 0.35,
-          this.posx + radio * 0.35, this.posy - radio * 0.35,
-          this.posx + radio * 0.25, this.posy - radio * 0.25,
-          this.posx - radio * 0.25, this.posy - radio * 0.25);
-      quad(this.posx + radio * 0.35, this.posy - radio * 0.35,
-
-          this.posx + radio * 0.25, this.posy - radio * 0.25,
-
-          this.posx + radio * 0.25, this.posy + radio * 0.25,
-          this.posx + radio * 0.35, this.posy + radio * 0.15);
-      rect(this.posx, this.posy, radio * 0.50, radio * 0.50);
-      fill('rgba(30,30,30,0.2)');
-      rect(this.posx - radio * 0.125, this.posy - radio * 0.20, radio * 0.25, radio * 0.10);
-      rect(this.posx + radio * 0.125, this.posy - radio * 0.10, radio * 0.25, radio * 0.10);
-      rect(this.posx - radio * 0.125, this.posy, radio * 0.25, radio * 0.10);
-      rect(this.posx + radio * 0.125, this.posy + radio * 0.10, radio * 0.25, radio * 0.10);
-      rect(this.posx - radio * 0.125, this.posy + radio * 0.20, radio * 0.25, radio * 0.10);
-      // endShape()
-      pop();
+    drawPorto: function(val,res) {
+       push();
+      imageMode(CENTER);
+      image(bloquePuerto, this.posx+(val==7?-radio:val==3?radio:0), this.posy+(val==1?-radio:val==9?radio*0.25:0)+(val==7?-radio*0.5:val==3?-radio*0.5:0), radio*1, radio*1.4)
+      
+      image(mapa.resources.assets[res].icon, this.posx+(val==7?-radio*1.75:val==3?radio*1.75:0), this.posy+(val==1?-radio*2:val==9?radio*0.8:0)+(res!='quinoa'?radio*0.2:radio*0.1)+(val==7?-radio*0.5:val==3?-radio*0.5:0), radio*0.5*(res=='quinoa'?0.8:1),(res=='quinoa'?0.8:1)*radio*0.5*mapa.resources.assets[res].size.h/mapa.resources.assets[res].size.w)
+      pop(); 
     },
     drawHouse: function(value) {
       push();
       var turn=value.id==turnIndex;
+      var hand = (this.jIndex==0||this.jIndex==6) && this.iIndex>1 && this.iIndex<10 && this.iIndex%2==0?+radio*0.22:(this.iIndex==0?-radio*0.16:this.iIndex==1?radio*0.23: radio*0.62)
       stroke('rgba(0,0,0,'+(turn?'0.5':'0.5')+')');
       strokeWeight(radio * 0.05);
-      fill(value ? turn?value.colorTotal:value.colorOpacity : PlayersDetails[turnIndex].color);
-      // textSize(32);
-      ellipse(this.posx, this.posy, radio *  (this.big?0.5: 0.35), radio * (this.big?0.5: 0.35));
+      fill(value ? value.colorTotal: PlayersDetails[turnIndex].color);
+      // textSize(34);
+      imageMode(CENTER)
+      //if(!turn)tint(255, 127);
+      image(casas[value.id][turn?"a":"b"], this.posx, this.posy-(hand), radio*0.72, radio)
+     // ellipse(this.posx, this.posy-radio *  0.60, radio *  0.20, radio * 0.20);
+      //ellipse(this.posx, this.posy, radio *  (this.big?0.5: 0.35), radio * (this.big?0.5: 0.35));
       // fill(0, 0, 0);
       // text(this.iIndex.toString() + this.jIndex.toString(), this.posx, this.posy)
       pop();
@@ -228,50 +242,61 @@ function Arista(iIndex, jIndex, start, end) {
     start: start,
     end: end,
     taken: '',
+    indexAnimate:26,
+    pivot:2,
     drawWay: function(value) {
-      // ellipse(this.posx, this.posy, 50,10)
       var turn=value.id==turnIndex;
-      fill(value ? turn?value.colorTotal:value.colorOpacity : PlayersDetails[turnIndex].color);
-
-      var angulo = Math.atan((this.start.posy - this.end.posy) / (this.start.posx - this.end.posx));
-      push();
-      stroke('rgba(0,0,0,'+(turn?'0.5':'0.5')+')');
-      strokeWeight(radio * 0.05);
-      translate((this.start.posx + this.end.posx) / 2, (this.start.posy + this.end.posy) / 2);
-      rotate(angulo);
-      // console.log(ind, ind2)
-      // line(objLine[0].posx, objLine[0].posy, objLine[1].posx, objLine[1].posy)
-      // text(angulo, (objLine[0].posx + objLine[1].posx) / 2, (objLine[0].posy + objLine[1].posy) / 2)
-      rectMode(CENTER);
-      rect(0, 0, radio * 0.8, radio * 0.2, 3, 3, 3, 3);
-      // image(img,-sideTriangle*0.6/2, -15, sideTriangle*0.6, 30)
-      pop();
-      textAlign(CENTER, CENTER);
-      fill('black');
-
+      
+      push()
+      var left;
+      if((iIndex==0||iIndex%2==1)&&iIndex!=9){
+        left = !(jIndex%2==0)
+      }else{
+        left = jIndex%2==0
+      }
+      var hand = (this.jIndex==0||this.jIndex==11) && this.iIndex>0&&this.iIndex<9 && this.iIndex%2==1?radio*0.08:(this.iIndex==0?radio*0.08: radio*0.49)
+      imageMode(CENTER)
+      translate((this.start.posx + this.end.posx) / 2- (!left?-radio*0.05:radio*0.05), (this.start.posy + this.end.posy) / 2 - hand);
+      if(turn){
+        image(left?caminos[value.id].left:caminos[value.id].right, 0,0, radio*1.1, radio*1.1*440/648)
+      }else{
+        image(left?caminos_b[value.id].left:caminos_b[value.id].right, 0,0, radio*1.1, radio*1.1*440/648)
+      }
+      
+     pop()
       // text(this.iIndex+'-'+this.jIndex,(this.start.posx+this.end.posx)/2,(this.start.posy+this.end.posy)/2)
     },
     draw: function(value) {
-      // ellipse(this.posx, this.posy, 50,10)
-      fill(value ? value : PlayersDetails[turnIndex].color);
-
-      var angulo = Math.atan((this.start.posy - this.end.posy) / (this.start.posx - this.end.posx));
-      push();
-      stroke('rgba(255,255,255,0.5)');
-      strokeWeight(radio * 0.05);
-      translate((this.start.posx + this.end.posx) / 2, (this.start.posy + this.end.posy) / 2);
-      rotate(angulo);
-      // console.log(ind, ind2)
-      // line(objLine[0].posx, objLine[0].posy, objLine[1].posx, objLine[1].posy)
-      // text(angulo, (objLine[0].posx + objLine[1].posx) / 2, (objLine[0].posy + objLine[1].posy) / 2)
-      rectMode(CENTER);
-      rect(0, 0, radio * 0.8, radio * 0.2, 3, 3, 3, 3);
-      // image(img,-sideTriangle*0.6/2, -15, sideTriangle*0.6, 30)
-      pop();
-      textAlign(CENTER, CENTER);
-      fill('black');
-
-      // text(this.iIndex+'-'+this.jIndex,(this.start.posx+this.end.posx)/2,(this.start.posy+this.end.posy)/2)
+      
+      
+      push()
+      var left;
+      if((iIndex==0||iIndex%2==1)&&iIndex!=9){
+        left = !(jIndex%2==0)
+      }else{
+        left = jIndex%2==0
+      }
+      //var hand = (this.jIndex==0||this.jIndex==6) && this.iIndex>1 && this.iIndex%2==0?+radio*0.22:(this.iIndex==0?-radio*0.16:this.iIndex==1?radio*0.23: radio*0.49)
+      var hand = (this.jIndex==0||this.jIndex==11) && this.iIndex>0&&this.iIndex<9 && this.iIndex%2==1?radio*0.08:(this.iIndex==0?radio*0.08: radio*0.49)
+      imageMode(CENTER)
+      translate((this.start.posx + this.end.posx) / 2- (!left?-radio*0.05:radio*0.05), (this.start.posy + this.end.posy) / 2 - hand);
+      image(left?caminos[turnIndex].left:caminos[turnIndex].right, 0,0, radio*1.1, radio*1.1*440/648)
+      rectMode(CENTER)
+      if(this.indexAnimate==50){
+        this.pivot = -2;
+      }else if (this.indexAnimate==26)
+      {
+        this.pivot=2;
+      }
+      this.indexAnimate+=this.pivot
+      translate(0,0-hand-(this.iIndex==0?25: 0)-this.indexAnimate)
+      stroke("black")
+      fill("white")
+      rect(0, 4, 9, 30);
+      triangle(0,29,8,15,-8,15);   
+      noStroke()
+      rect(0, 14, 7, 5); 
+      pop()
     },
   };
 }
@@ -310,53 +335,64 @@ function Rombo(origin, resource, number, knight) {
           return Arista(this.origin.iIndex + 1, this.origin.iIndex == 8 || this.origin.iIndex % 2 == 1 ? this.origin.jIndex * 2 + 1 : this.origin.jIndex * 2 + 2, this.getPoint('down'), this.getPoint('right'));
       }
     },
-    draw: function() {
-      image(this.resource.icon, this.origin.posx - radio, this.origin.posy - radio, 2 * radio, 2 * radio);
-      fill(this.resource ? this.resource.color : 'black');
-
-      quad(this.origin.posx - radio, this.origin.posy,
-          this.origin.posx, this.origin.posy + radio,
-          this.origin.posx + radio, this.origin.posy,
-          this.origin.posx, this.origin.posy - radio);
-
+    drawNumber:function(){
       if (this.number.tag != 7) {
+        push()
         textAlign(CENTER, CENTER);
         fill('black');
-        fill('rgba(0,0,0,0.4)');
-        ellipse(this.origin.posx + (radio * 0.025), this.origin.posy + (radio * 0.025), radio * 0.4, radio * 0.4);
-        fill('lightgrey');
-        stroke('rgba(0,0,0,0.7)');
-        ellipse(this.origin.posx, this.origin.posy, radio * 0.4, radio * 0.4);
-        fill('black');
-        textSize((radio * 0.25));
-        text(this.number.tag, this.origin.posx, this.origin.posy);
+        rectMode(CENTER)
+        rect(this.origin.posx-radio*0.32,this.origin.posy-radio*0.34,2,10)
+        ellipse(this.origin.posx-radio*0.32,this.origin.posy-radio*0.34-15,20,20)
+        triangle(this.origin.posx-radio*0.32, this.origin.posy-radio*0.34+5, this.origin.posx-radio*0.32+2, this.origin.posy-radio*0.34+7, this.origin.posx-radio*0.32-2, this.origin.posy-radio*0.34+7)
+        textSize((radio * 0.18));
+        noStroke()
+        fill('white');
+        text(this.number.tag, this.origin.posx-radio*0.32,this.origin.posy-radio*0.34-16); 
+        pop()      
       }
-
-      // this.origin.draw()
-      // origin.draw()
+    },
+    draw: function() {  
+      push()
+      imageMode(CENTER);
+      
+      image(this.number.tag==7?desierto:bloque, this.origin.posx, this.origin.posy, radio*1.28, radio*1.5)
+      if(resource!=null && this.number.tag!=7){
+        if(resource.size!=null){
+        image(resource.icon, this.origin.posx, this.origin.posy-radio*0.38, radio*0.45,radio*0.45*resource.size.h/resource.size.w)}else{
+          image(resource.icon, this.origin.posx, this.origin.posy-radio*0.38, radio*0.45,radio*0.45)
+        }
+      }
+      
+        //fill(resource.color);
+      //ellipse(this.origin.posx, this.origin.posy,20,20)
+      pop()
+      this.drawNumber();
     },
     drawSelection: function(opacity) {
-      push();
-      noFill();
-      stroke('white');
-      strokeWeight(radio*0.07);
-      quad(this.origin.posx - radio, this.origin.posy,
-          this.origin.posx, this.origin.posy + radio,
-          this.origin.posx + radio, this.origin.posy,
-          this.origin.posx, this.origin.posy - radio);
-
-      pop();
-      // origin.draw()
+      push()
+      imageMode(CENTER);
+      image(bloqueActivo, this.origin.posx, this.origin.posy, radio*1.28, radio*1.5)
+       if(resource!=null&& this.number.tag!=7){
+        if(resource.size!=null){
+        image(resource.icon, this.origin.posx, this.origin.posy-radio*0.38, radio*0.45,radio*0.45*resource.size.h/resource.size.w)}else{
+          image(resource.icon, this.origin.posx, this.origin.posy-radio*0.38, radio*0.45,radio*0.45)
+        }
+      }
+      pop()
+      this.drawNumber();
     },
     drawActive: function(opacity) {
-      fill(opacity ? PlayersDetails[turnIndex].colorOpacity : PlayersDetails[turnIndex].color);
-      quad(this.origin.posx - radio, this.origin.posy,
-          this.origin.posx, this.origin.posy + radio,
-          this.origin.posx + radio, this.origin.posy,
-          this.origin.posx, this.origin.posy - radio);
-
-
-      // origin.draw()
+      push()
+      imageMode(CENTER);
+      image(bloqueActivo, this.origin.posx, this.origin.posy, radio*1.28, radio*1.5)
+      if(resource!=null&& this.number.tag!=7){
+        if(resource.size!=null){
+        image(resource.icon, this.origin.posx, this.origin.posy-radio*0.38, radio*0.45,radio*0.45*resource.size.h/resource.size.w)}else{
+          image(resource.icon, this.origin.posx, this.origin.posy-radio*0.38, radio*0.45,radio*0.45)
+        }
+      }
+      pop()
+      this.drawNumber();
     },
   };
 }
@@ -368,7 +404,7 @@ function Knight(iIndex, jIndex) {
     previusiIndex: iIndex,
     previusjIndex: jIndex,
     draw: function(list) {
-      image(mapa.images.knight, list[this.iIndex][this.jIndex].origin.posx - (radio * 0.4725 / 2), -(radio*0.7)+ list[this.iIndex][this.jIndex].origin.posy - (radio / 2), radio * 0.4725, radio);
+      image(mapa.images.knight, list[this.iIndex][this.jIndex].origin.posx - (radio * 0.4725 / 2)+radio*0.45, -(radio*0.7)+ list[this.iIndex][this.jIndex].origin.posy - (radio / 2)+radio*0.2, radio * 0.6158*0.7, radio*0.7);
     },
   };
 }
@@ -401,13 +437,13 @@ function Mapa() {
       }
     },
     preload: function() {
-      this.images.knight = loadImage('assets/knight.png');
+      this.images.knight = loadImage('./inkatan/GameCore/assets/runa/runa.png');
     },
     setup: function() {
       for (var i = 0; i < this.altura; i++) {
         var padd = (i % 2 == 0 ? radio : 0) + radio;
         for (var j = 0; j < (i % 2 == 0 ? 5 : 6); j++) {
-          var origen = Vertice(i, j, paddingLeft + padd + (radio * 2 * j), paddingHeight + radio + (radio * i));
+          var origen = Vertice(i, j, paddingLeft + padd + (radio * 2 * j), paddingHeight + radio + (radio * i*0.6));
           var resource = this.resources.getRandom();
           var number = resource.name == 'desierto' ? {
             tag: 7,
@@ -471,7 +507,7 @@ function Mapa() {
                   amount: -4,
                 }],
               };
-              ResourcesController([message]);
+              ResourcesController([message],true);
               this.listPoints[player.indicators.vertice.fi][player.indicators.vertice.fj].big = true;
               for (var i = 0; i < player.houses.length; i++) {
                 if(player.houses[i].id==player.indicators.vertice.fi+"-"+player.indicators.vertice.fj){
@@ -539,7 +575,7 @@ function Mapa() {
                   amount: -2,
                 }],
               };
-              ResourcesController([message]);
+              ResourcesController([message],true);
             }
 
             // sendMessageServer(
@@ -548,9 +584,30 @@ function Mapa() {
             this.listPoints[player.indicators.vertice.fi][player.indicators.vertice.fj].taken = turnIndex;
             this.listPoints[player.indicators.vertice.fi][player.indicators.vertice.fj].big = false;
             player.houses.push(this.listPoints[player.indicators.vertice.fi][player.indicators.vertice.fj]);
+            
+            
+            player.points=player.points+2;
+          
+            player.expansion=player.expansion+(100/34);
+          
             if (ActualParameters.gamemode=='expansion') {
-              if (100*player.houses.length/68>=parseInt(ActualParameters.gamevalue)) {
-                modal.show('El ganador es '+player.name, 10);
+              if (100*player.houses.length/34>=parseInt(ActualParameters.gamevalue)) {
+                modal.show('El ganador es '+player.name, 10,true);
+                setTimeout(function(){
+                  location.assign(location.href.substr(0,location.href.indexOf('inkatan'))+"splashscreen.html")
+                },10000)
+              }else{
+                modal.showUp(player.name+" construyó un poblado", 2);
+              }
+            }else{
+              if (
+                player.points>=parseInt(ActualParameters.gamevalue)) {
+                modal.show('El ganador es '+player.name, 10,true);
+                setTimeout(function(){
+                  location.assign(location.href.substr(0,location.href.indexOf('inkatan'))+"splashscreen.html")
+                },10000)
+              }else{
+                modal.showUp(player.name+" construyó un poblado", 2);
               }
             }
           } else {
@@ -560,6 +617,35 @@ function Mapa() {
         } else {
           reason='No puedes colocar un poblado donde ya hay uno construido';
           modal.show(reason, 2);
+        }
+        var nomore =  this.confirmWinner();
+        if(!nomore){
+          var namewinner = "";
+          if(ActualParameters.gamemode=='expansion'){
+            
+            var max = 0;
+            for (var pi = 0; pi < PlayersDetails.length; pi++) {
+             if(PlayersDetails[pi].expansion>max){
+               max=PlayersDetails[pi].expansion;
+               namewinner=PlayersDetails[pi].name
+             }
+              
+            }
+            
+          }else{
+            var max = 0;
+            for (var pi = 0; pi < PlayersDetails.length; pi++) {
+             if(PlayersDetails[pi].points>max){
+               max=PlayersDetails[pi].points;
+               namewinner=PlayersDetails[pi].name
+             }
+              
+            }
+          }
+          modal.show('El ganador es '+namewinner, 10,true);
+                setTimeout(function(){
+                  location.assign(location.href.substr(0,location.href.indexOf('inkatan'))+"splashscreen.html")
+                },10000)
         }
       } else if (this.select == 'arista') {
         var reason = '';
@@ -595,7 +681,7 @@ function Mapa() {
                   amount: -1,
                 }],
               };
-              ResourcesController([message]);
+              ResourcesController([message],true);
             }
 
             this.listAristas[player.indicators.arista.fi][player.indicators.arista.fj].taken = turnIndex;
@@ -603,6 +689,23 @@ function Mapa() {
             player.longRoad = GetLongRoadPlayer(player.id);
             ProcessLongRoad();
             console.log(player);
+            modal.showUp(player.name+" construyó un camino", 2);
+            player.points=player.points+1;
+          
+          
+            if (ActualParameters.gamemode=='expansion') {
+              
+            }else{
+              if (
+                player.points>=parseInt(ActualParameters.gamevalue)) {
+                modal.show('El ganador es '+player.name, 10,true);
+                setTimeout(function(){
+                  location.assign(location.href.substr(0,location.href.indexOf('inkatan'))+"splashscreen.html")
+                },10000)
+              }else{
+                modal.showUp(player.name+" construyó un camino", 2);
+              }
+            }
           } else {
             modal.show(reason, 2);
           }
@@ -618,10 +721,10 @@ function Mapa() {
             this.knight.previusiIndex = this.knight.iIndex;
             this.knight.previusjIndex = this.knight.jIndex;
             this.select = '';
-
+          modal.showUp(player.name+" movió al runa", 2);
             game.ChangeStatus('ROUND');
 
-            PaseTurno();
+            //PaseTurno();
           }
         }
       }
@@ -638,6 +741,53 @@ function Mapa() {
     },
     printPoint: function(i, j) {
       this.listPoints[i][j].draw();
+      /* var adj = this.listPoints[i][j].getAdyacents();
+      var that=this
+      adj.map(function(xit){
+        if(that.listPoints[xit.fi]!=null){
+          if(that.listPoints[xit.fi][xit.fj]!=null)
+          that.listPoints[xit.fi][xit.fj].draw();
+      }
+      }) */
+    },
+    confirmWinner:function(){
+      var that=this
+      var exit =  false;
+      for (var i = 0; i < this.listPoints.length; i++) {
+        for (var j = 0; j < this.listPoints[i].length; j++) {
+        var xi = that.listPoints[i][j];
+        var adj = xi.getAdyacents();
+        var valid = true;
+        for (var x = 0; x < adj.length; x++) {
+          if(that.listPoints[adj[x].fi]!=null){
+            if(that.listPoints[adj[x].fi][adj[x].fj]!=null)
+            if(that.listPoints[adj[x].fi][adj[x].fj].taken.toString()!='' ){
+              //console.log("Invalid"+i+"-"+j)
+              valid = false;
+              break;
+            }else{
+              console.log("Valid"+i+"-"+j)
+              console.log(that.listPoints[adj[x].fi][adj[x].fj].taken)
+            }
+          }
+        }
+       if(xi.taken.toString()!=''){
+         valid=false;
+         console.log("SAME");
+       }
+      if(valid){
+        exit=true;
+        break
+        //console.log("valid"+i+"-"+j)
+      }else{
+
+      }
+    }
+    
+
+    }
+    
+      return exit;
     },
     printArista: function(i, j) {
       this.listAristas[i][j].draw();
@@ -669,17 +819,17 @@ function Mapa() {
         if (this.ruleta.type == 'run') {
           this.ruleta.tempo = this.ruleta.tempo >= this.ruleta.pivot ? 0 : this.ruleta.tempo + 1;
           if (this.ruleta.tempo >= this.ruleta.pivot) {
-            // if (this.ruleta.index == 3) {
-            this.ruleta.pivot = this.ruleta.pivot + this.ruleta.pivot * 0.2;
+             if (this.ruleta.index == 3) {
+            this.ruleta.pivot = this.ruleta.pivot + this.ruleta.pivot * 1;
             this.ruleta.tempo = 0;
-            // }
+             }
             this.ruleta.index = this.ruleta.index == 3 ? 0 : this.ruleta.index + 1;
 
-            if (this.ruleta.pivot >= 30) {
+            if (this.ruleta.pivot >= 3) {
               var that = this;
               setTimeout(function() {
                 that.ruleta.type = 'asign';
-              }, 2000);
+              }, 1000);
               this.ruleta.type = 'stop';
               this.ruleta.opacity = true;
               this.ruleta.tempo = 0;
@@ -688,7 +838,7 @@ function Mapa() {
         }
         if (this.ruleta.type == 'stop') {
           this.ruleta.tempo = this.ruleta.tempo + 1;
-          if (this.ruleta.tempo == 10) {
+          if (this.ruleta.tempo == 1) {
             this.ruleta.opacity = !this.ruleta.opacity;
             this.ruleta.tempo = 0;
           }
@@ -717,36 +867,151 @@ function Mapa() {
       }
     },
     printAll: function() {
+      var list = this.listPoints;
       for (var ro = 0; ro < this.listRombos.length; ro++) {
+        if(ro==0)
+        portos.map(function(item) {
+          if(item.fi==ro+1 )
+          list[item.fi][item.fj].drawPorto(item.fi,item.resource);
+        });
+        /*  */
+          if(ro<=1){
+            
+            PlayersDetails.map(function(player) {
+            player.houses.map(function(house) {
+            if(house.iIndex==ro )
+            house.drawHouse(player);
+            });})
+            if(this.select=="vertice"){
+              
+              showPointer(ro);
+            }
+            
+            PlayersDetails.map(function(player) {
+              player.ways.map(function(way) {
+                if(way.iIndex==ro)
+                way.drawWay(player);
+              });})
+              if(this.select=="arista"){
+            
+                showPointer(ro);
+              }
+        }
+         if(ro==1||ro==2){
+
+          PlayersDetails.map(function(player) {
+            player.houses.map(function(house) {
+            if(house.iIndex==ro+1 )
+            house.drawHouse(player);
+            });})
+            if(this.select=="vertice"){
+              
+              showPointer(ro+1);
+            }
+         }
+        /*if(ro==0)portos.map(function(item) {
+          if(item.fi==ro+1)
+          list[item.fi][item.fj].drawPorto(item.fi,item.resource);
+        });
+        
+        
+        PlayersDetails.map(function(player) {
+          
+          player.houses.map(function(house) {
+            if(house.iIndex==ro)
+            house.drawHouse(player);
+          });
+          player.ways.map(function(way) {
+            if(way.iIndex==ro)
+            way.drawWay(player);
+          });
+          
+        });
+        showPointer(ro);*/
         for (var rom = 0; rom < this.listRombos[ro].length; rom++) {
           this.listRombos[ro][rom].draw();
           
         }
+        if(ro<9 && ro!=0)
+        portos.map(function(item) {
+          if(item.fi==ro+1 )
+          list[item.fi][item.fj].drawPorto(item.fi,item.resource);
+        });
+        this.actualSections.map(function(rombo) {
+          if(rombo.iIndex == ro)
+          rombo.drawSelection();
+        });
+
+        
+        /*if(ro<8 && ro!=0)
+        
+        
+        
+        PlayersDetails.map(function(player) {
+          
+          player.houses.map(function(house) {
+            if(house.iIndex==ro+1 ||house.iIndex==10)
+            house.drawHouse(player);
+          });
+          player.ways.map(function(way) {
+            if(way.iIndex==ro+1)
+            way.drawWay(player);
+          });
+          if(ro>=8)
+        portos.map(function(item) {
+          if(item.fi==ro+1)
+          list[item.fi][item.fj].drawPorto(item.fi,item.resource);
+        });
+        });*/
+        
+        
+        
+        if(ro>0){
+          PlayersDetails.map(function(player) {
+          player.ways.map(function(way) {
+            if(way.iIndex==ro+1)
+            way.drawWay(player);
+          });})
+          if(this.select=="arista"){
+        
+            showPointer(ro+1);
+          }
+        }
+        if(ro>1){
+          PlayersDetails.map(function(player) {
+            player.houses.map(function(house) {
+            if(house.iIndex==ro+2 )
+            house.drawHouse(player);
+          });})
+          if(this.select=="vertice"){
+            
+            showPointer(ro+2);
+          }
+        }
+         
+        
         
       }
       
-      var list = this.listPoints;
+      
 
 
       this.spinAnimation();
       dice.draw();
-      this.actualSections.map(function(rombo) {
-        rombo.drawSelection();
-      });
-      portos.map(function(item) {
-        list[item.fi][item.fj].drawPorto();
-      });
+      
+      
       this.printKnight();
-      /* this.listPoints.map(function (points) {
-                points.map(function (point) {
-                    point.draw()
-                })
-            })*/
-      /* this.listAristas.map(function(aristas){
+       
+       /* this.listAristas.map(function(aristas){
                 aristas.map(function(arista){
                     arista.draw()
                 })
-            })  */
+            })  
+            this.listPoints.map(function (points) {
+              points.map(function (point) {
+                  point.draw()
+              })
+          })  */
       //   console.log(response)
       /* response.map(function (value) {
                 value.point.draw()
@@ -925,7 +1190,7 @@ function Mapa() {
                   }
                 });
                 if (rombo.resource.type !== 'dessert' && canPass) {
-                  listasignanimation.push(MoveItem(rombo.origin.posx, rombo.origin.posy, PlayersDetails[turnIndex].avatar.posx, PlayersDetails[turnIndex].avatar.posy, 20, rombo.resource.icon));
+                  listasignanimation.push(MoveItem(rombo.origin.posx, rombo.origin.posy, PlayersDetails[turnIndex].avatar.posx, PlayersDetails[turnIndex].avatar.posy, 40, rombo.resource));
 
                   if (listresources[rombo.resource.type]) {
                     listresources[rombo.resource.type] = listresources[rombo.resource.type] + 1;
@@ -947,7 +1212,7 @@ function Mapa() {
               };
             }),
           };
-          ResourcesController([message]);
+          ResourcesController([message],true);
 
           // console.log(listresources)
           this.setAsignAnimation({
@@ -971,8 +1236,8 @@ function Mapa() {
             type: 'run',
             list: listAround,
             index: Math.floor(Math.random() * 100) % 4,
-            tempo: 0,
-            pivot: 2,
+            tempo: 2,
+            pivot: 1,
           };
         } else {
           if (this.ruleta.type == 'asign') {
@@ -983,7 +1248,7 @@ function Mapa() {
                 if (this.listRombos[listAround[index].fi][listAround[index].fj]) {
                   var rombo = this.listRombos[listAround[index].fi][listAround[index].fj];
                   if (rombo.resource.type !== 'dessert' && index != this.ruleta.index) {
-                    listasignanimation.push(MoveItem(rombo.origin.posx, rombo.origin.posy, PlayersDetails[turnIndex].avatar.posx, PlayersDetails[turnIndex].avatar.posy, 20, rombo.resource.icon));
+                    listasignanimation.push(MoveItem(rombo.origin.posx, rombo.origin.posy, PlayersDetails[turnIndex].avatar.posx, PlayersDetails[turnIndex].avatar.posy, 30, rombo.resource));
                     if (listresources[rombo.resource.type]) {
                       listresources[rombo.resource.type] = listresources[rombo.resource.type] + 1;
                     } else {
@@ -1004,7 +1269,7 @@ function Mapa() {
                 };
               }),
             };
-            ResourcesController([message]);
+            ResourcesController([message],true);
             this.setAsignAnimation({
               turnIndex,
               listasignanimation,
@@ -1059,9 +1324,11 @@ function Mapa() {
         };
         messageArray.push(newMessage);
       });
-      ResourcesController(messageArray);
-      console.log(result);
-      PaseTurno();
+      ResourcesController(messageArray,true);
+      asignaciones= messageArray;
+      mostrarAsignacion = true;
+      
+      //PaseTurno();
     },
     findNumbers: function(val) {
       var listOrigin = [];
@@ -1102,16 +1369,56 @@ function Dice() {
     value: [],
     show: true,
     execute: false,
+    animation: false,
+    indexAnimation:0,
+    counter : 0,
+    it:0,
     draw: function() {
       if (this.value.length > 0) {
         push();
         fill('white');
         rectMode(CENTER);
-        var size = paddingLeft * 0.4;
-        rect(paddingLeft * 0.25, heightCanvas / 2, paddingLeft * 0.4, paddingLeft * 0.4, paddingLeft * 0.02);
-        rect(paddingLeft * 0.70, heightCanvas / 2, paddingLeft * 0.4, paddingLeft * 0.4, paddingLeft * 0.02);
-        this.drawPoints(this.value[0], true);
-        this.drawPoints(this.value[1], false);
+        imageMode(CENTER);
+        strokeWeight(3)
+        var padd = paddingLeft*0.4
+        rect(paddingLeft * 0.25, heightCanvas / 2-paddingLeft * 0.625+padd, paddingLeft * 0.7, paddingLeft *0.97, paddingLeft * 0.06);
+        strokeWeight(1)
+        if(!this.animation){
+          image(dices[this.value[0]-1],paddingLeft * 0.3, heightCanvas / 2-paddingLeft * 0.4+padd,paddingLeft * 0.4, paddingLeft * 0.4)
+          image(dices[this.value[1]-1],paddingLeft * 0.3, heightCanvas / 2-paddingLeft * 0.85+padd,paddingLeft * 0.4, paddingLeft * 0.4)
+        }else{
+
+          image(spritDice[this.indexAnimation], paddingLeft * 0.3, heightCanvas / 2-paddingLeft * 0.625+padd, paddingLeft * 0.5, paddingLeft*0.9 , paddingLeft * 0.02);
+          this.counter++;
+          if(this.counter>=3){
+            this.counter =0
+            this.indexAnimation++;
+            if(this.indexAnimation>=4){
+              this.indexAnimation=0;
+              
+              this.it++
+              if(this.it>=3){
+
+              console.log(this.it)
+                this.animation=false
+                this.it=0;
+                modal.showUp(PlayersDetails[turnIndex].name+" lanzó "+(this.value[0]+this.value[1]), 2);
+                if(this.value[0]+this.value[1]==7){
+                  modal.showUp(PlayersDetails[turnIndex].name+" mueve al runa", 2);
+                
+                }
+        
+              }
+            } 
+            
+            
+          }
+        }
+        
+        //rect(paddingLeft * 0.25, heightCanvas / 2, paddingLeft * 0.4, paddingLeft * 0.4, paddingLeft * 0.02);
+        //rect(paddingLeft * 0.70, heightCanvas / 2, paddingLeft * 0.4, paddingLeft * 0.4, paddingLeft * 0.02);
+        //this.drawPoints(this.value[0], true);
+        //this.drawPoints(this.value[1], false);
         pop();
       }
     },
@@ -1120,7 +1427,7 @@ function Dice() {
       var center = first ? paddingLeft * 0.25 : paddingLeft * 0.70;
       if (value == 1) {
         fill('black');
-        ellipse(center, heightCanvas / 2, size / 7);
+        ellipse(center, heightCanvasr / 2, size / 7);
       }
       if (value == 2) {
         fill('black');
@@ -1160,13 +1467,18 @@ function Dice() {
     },
     throwDice: function() {
       if (game.status == 'ROUND') {
+        mapa.actualSections=[]
         this.value = [1 + Math.floor(Math.random() * 100) % 6, 1 + Math.floor(Math.random() * 100) % 6];
         if (this.value[0] + this.value[1] != 7) {
+          this.animation = true;
+          
           mapa.asignResources(this.value[0] + this.value[1]);
         } else {
+          this.animation = true;
           var message = {
             name: PlayersDetails[turnIndex].name,
           };
+          console.log(message)
           KnightController(message);
         }
       }
@@ -1174,7 +1486,7 @@ function Dice() {
   };
 }
 
-function MoveItem(posx, posy, fposx, fposy, milliseconds, icon) {
+function MoveItem(posx, posy, fposx, fposy, milliseconds, res) {
   return {
     posx: posx,
     posy: posy,
@@ -1183,19 +1495,16 @@ function MoveItem(posx, posy, fposx, fposy, milliseconds, icon) {
     milliseconds: milliseconds,
     deltax: (-1)*(posx-fposx) / (milliseconds),
     deltay: (-1)*(posy-fposy) / (milliseconds),
-    image: icon,
+    image: res,
     counter: 0,
     draw: function() {
-      fill('black');
       var vel=1;
       this.counter=this.counter+1;
-      quad(this.posx - radio, this.posy,
-          this.posx, this.posy + radio,
-          this.posx + radio, this.posy,
-          this.posx, this.posy - radio);
-
-      image(this.image, this.posx - radio, this.posy - radio, 2 * radio, 2 * radio);
-
+      push()
+      imageMode(CENTER)
+      //image(this.image.icon, this.posx - radio, this.posy - radio, 2 * radio, 2 * radio);
+      if(this.image.size!=null)image(this.image.icon, this.posx, this.posy-radio*0.38, radio*0.7,radio*0.7*this.image.size.h/this.image.size.w)
+      pop()
       if (this.counter<milliseconds+4) {
         if (!(this.counter<milliseconds-4)) {
           vel=0.5;
@@ -1206,6 +1515,7 @@ function MoveItem(posx, posy, fposx, fposy, milliseconds, icon) {
       } else {
         return false;
       }
+      
     },
 
   };

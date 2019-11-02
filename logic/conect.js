@@ -1,13 +1,9 @@
 var webSocket = {};
-var glob = new GlobalState();
-var ActualParameters;
+/*var glob = new GlobalState();
+var ActualParameters;*/
 var cursors;
-$(document).ready(function () {
-    getParametersFromUrl();
-    console.log(ActualParameters.url);
-    connect(ActualParameters.url);
-});
 function connect(url) {
+    
     if (url != null) {
         var obj_1;
         webSocket.ws = new WebSocket(url);
@@ -17,6 +13,8 @@ function connect(url) {
             if (message)
                 glob.execute(JSON.parse(message));
         };
+
+        logs(url)
         webSocket.ws.onopen = function () {
            
                     if (ActualParameters.namesPlayers != null) {
@@ -34,8 +32,9 @@ function connect(url) {
     }
 }
 function sendMessageServer(texto) {
+    console.log("SENDED");
     console.log(texto);
-   webSocket.ws.send(JSON.stringify(texto));
+    webSocket.ws.send(JSON.stringify(texto));
 }
 function getParametersFromUrl() {
     var newStr = location.href.substr(location.href.indexOf("?") + 1);

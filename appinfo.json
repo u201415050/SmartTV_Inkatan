@@ -1,9 +1,9 @@
 {
     "id": "com.upc.inkatan",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "vendor": "My Company",
     "type": "web",
-    "main": "index.html",
+    "main": "splashscreen.html",
     "title": "Inkatan",
     "icon": "icon.png",
     "largeIcon": "largeIcon.png"

@@ -5,24 +5,12 @@ var arrayElements = [
 	'<div id="player3" class="itemPlayer"><div id="avatar3" class="avatar " style="border-radius: ' + widthHtml * 0.07 + 'px;width:' + widthHtml * 0.14 + 'px; height:' + widthHtml * 0.14 + 'px; background: rgb(126, 34, 140)"><img id="userImage3" class="user" src="../../assets/icons/user.png" style="width:' + widthHtml * 0.12 + 'px; height:' + widthHtml * 0.12 + 'px"/></div><div id="playerName3" class="playerName" style="color:white; font-size:' + widthHtml * 0.022 + 'px">',
 	'<div id="player4" class="itemPlayer"><div id="avatar4" class="avatar " style="border-radius: ' + widthHtml * 0.07 + 'px;width:' + widthHtml * 0.14 + 'px; height:' + widthHtml * 0.14 + 'px; background: rgb(140, 89, 34)"><img id="userImage4" class="user" src="../../assets/icons/user.png" style="width:' + widthHtml * 0.12 + 'px; height:' + widthHtml * 0.12 + 'px"/></div><div id="playerName4" class="playerName" style="color:white; font-size:' + widthHtml * 0.022 + 'px">'
 ]
-$(document).ready(function () {
-	//width = $(window).width()
-
-	var namesPlayers = ActualParameters.namesPlayers.split(',')
-	for (var index = 0; index < ActualParameters.numberPlayers; index++) {
-		console.log(index);
-		$("#contain").append(arrayElements[index] + namesPlayers[index] + '</div><div></div>');
-		$('#player' + (index + 1)).css(index == 0 || index == 2 ? "top" : 'bottom', widthHtml * 0.005);
-		$('#player' + (index + 1)).css(index == 0 || index == 1 ? "left" : 'right', widthHtml * 0.005);
-		$('#playerName' + (index + 1)).text(namesPlayers[index]);;
-	}
-
-});
 
 var turnIndex = 0
 
 function PaseTurno() {
 	//alert(1)
+	
 	$('#avatar' + (turnIndex + 1)).removeClass("turnActive");
 	if (turnIndex + 1 == ActualParameters.numberPlayers) {
 		turnIndex = 0;
@@ -36,8 +24,10 @@ function PaseTurno() {
 		player: PlayersDetails[turnIndex].name
 	})
 	activeTurn = true
+	dado=true;
+	modal.showUp("Es turno de "+PlayersDetails[turnIndex].name, 2);
+	mostrarAsignacion=false
 }
-console.log("step1")
 function BackTurno() {
 	//alert(1)
 	$('#avatar' + (turnIndex + 1)).removeClass("turnActive");
@@ -52,5 +42,5 @@ function BackTurno() {
 		action:"TURNO",
 		player: PlayersDetails[turnIndex].name
 	})
+	modal.showUp("Es turno de "+PlayersDetails[turnIndex].name, 2);
 }
-console.log("step2")

@@ -21,6 +21,8 @@ var ready = [];
 
 function setPlayers(valueCursor) {
 	$("#messageWaiting").remove();
+	$("#logo").remove();
+	$("#titulo").css("display","block");
 	for (var i = 0; i < valueCursor; i++) {
 		$("#playersContainer").append(playersIcons[i]);
 		tasks.push(
@@ -45,6 +47,7 @@ function changeName(name) {
 		tasks[lenPlayers].name=name+" conectado"
 		lenPlayers++;
 		$('#playerName' + lenPlayers).text(name)
+		$('#playerName' + lenPlayers).addClass("focus");
 		listNames.push(name)
 		$('#player' + lenPlayers).removeClass("disabled")
 		setReady(lenPlayers - 1)
@@ -86,6 +89,7 @@ function setReady(index) {
 		listNames.map(function (item) {
 			strNames += ',' + item
 		})
+		console.log("hola");
 		sendMessageServer({
 			action:"ALLREADY"
 		})

@@ -186,7 +186,7 @@ var GlobalState = /** @class */ (function () {
                 return false;
         }
         catch (e) {
-            console.log("Action in " + this.currentState + " doesn't exist");
+            console.log("Action "+actionObject["action"]+" in " + this.currentState + " doesn't exist");
             return false;
         }
     };
