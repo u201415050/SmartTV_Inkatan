@@ -174,15 +174,26 @@ function Modal(){
                 textAlign(CENTER,CENTER)
                 noStroke();
                 fill('white')
-                rect(widthCanvas/2,heightCanvas/2,widthCanvas*0.4, heightCanvas*0.25,heightCanvas*0.03 )
+                rect(widthCanvas/2,heightCanvas/2,widthCanvas*0.4,this.winner?heightCanvas*0.5: heightCanvas*0.25,heightCanvas*0.03 )
                 strokeWeight(1)
                 textSize(radio*0.43)
                 fill('black')
                 noStroke()
-                text(this.messageCenter,widthCanvas/2+(this.winner?widthCanvas*0.05:0),heightCanvas*0.98/2,(this.winner?widthCanvas*0.2:widthCanvas*0.35),heightCanvas*0.2)
+                
                 if(this.winner){
                     imageMode(CENTER)
-                    image(mapa.images.knight, widthCanvas*0.37,heightCanvas*0.98/2, radio * 0.6158*2.1, radio*2.1);
+                    image(winneras.frame,widthCanvas/2,heightCanvas/2,widthCanvas*0.4, heightCanvas*0.5 )
+                    textSize(radio*0.6)
+                    fill('white')
+                    strokeWeight(14)
+                    stroke("black")
+                    text("THE WINNER IS",5+widthCanvas/2,heightCanvas*0.37,widthCanvas*0.38,heightCanvas*0.2)
+                    textSize((this.messageCenter.length<2?1:this.messageCenter.length<4?2:this.messageCenter.length>10?9:7)*radio/this.messageCenter.length)
+                    text(this.messageCenter,10+widthCanvas/2,heightCanvas*0.53,widthCanvas*0.38,heightCanvas*0.2)
+                    image(winneras.knight, widthCanvas*0.15,heightCanvas*0.98/2, radio * 0.6158*4, radio*4);
+                    image(winneras.knight, widthCanvas*0.85,heightCanvas*0.98/2, radio * 0.6158*4, radio*4);
+                }else{
+                    text(this.messageCenter,widthCanvas/2+(this.winner?widthCanvas*0.05:0),heightCanvas*0.98/2,(this.winner?widthCanvas*0.2:widthCanvas*0.35),heightCanvas*0.2)
                 }
                 pop()
             }

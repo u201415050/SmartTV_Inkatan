@@ -27,15 +27,15 @@ function findServers() {
 		5000,
 		availableServersToDiv,
 		null)
-}
+} 
 Synapse.stop
 //#region STARS
 
 //#endregion
 
 $(document).ready(function () {
-	//renderStars();
-	//renderLitleStars();
+	renderStars();
+	renderLitleStars();
 	setTimeout(findServers, 3000);
 });
 

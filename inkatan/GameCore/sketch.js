@@ -41,6 +41,9 @@ var userDisabled;
 var mostrarAsignacion =false;
 var asignaciones = [{"name":"Jesus","resource":[{"name":"stone","amount":1}]},{"name":"Raphael","resource":[{"name":"stone","amount":1},{"name":"stone","amount":1},{"name":"stone","amount":1}]}];
 var asignacionesContador = 0;
+var sounds = {}
+var winneras = {}
+
 // PRELOAD IMAGES
  function preload() {
     mapa.preload()
@@ -59,6 +62,8 @@ var asignacionesContador = 0;
     loadImage('./inkatan/GameCore/assets/dices/dice4.png'),
     loadImage('./inkatan/GameCore/assets/dices/dice5.png'),
     loadImage('./inkatan/GameCore/assets/dices/dice6.png')];
+    winneras.frame = loadImage('./inkatan/GameCore/assets/winner/frame.png')
+    winneras.knight = loadImage('./inkatan/GameCore/assets/runa/winner.png')
     casas = [
         {a:loadImage('./inkatan/GameCore/assets/casas/1a.png'),b:loadImage('./inkatan/GameCore/assets/casas/1b.png')},
         {a:loadImage('./inkatan/GameCore/assets/casas/2a.png'),b:loadImage('./inkatan/GameCore/assets/casas/2b.png')},
@@ -84,6 +89,7 @@ var asignacionesContador = 0;
     userDisabled=loadImage('./inkatan/GameCore/assets/userDisabled.png');
     userActiveIcon=loadImage('./inkatan/GameCore/assets/userReady.png');
     font = loadFont('./inkatan/GameCore/font.otf');
+    sounds["background"]=loadSound('./inkatan/GameCore/sounds/background.mp3');
 }
 
 //CALL CARD
@@ -92,6 +98,8 @@ var asignacionesContador = 0;
 }  
 //SETUP MAP AND PLAYERS
 function setup() {
+    sounds["drum"]=loadSound('./inkatan/GameCore/sounds/drum.mp3');
+    
     if(gamestart){
     console.log("HERE");
     createCanvas(widthCanvas, heightCanvas);
@@ -104,6 +112,18 @@ function setup() {
     textFont(font)
     console.log("finish");
     gamestarted=true;
+    sounds["dices"]=loadSound('./inkatan/GameCore/sounds/dices.mp3');
+    sounds["build"]=loadSound('./inkatan/GameCore/sounds/build.mp3');
+    sounds["shout"]=loadSound('./inkatan/GameCore/sounds/shout.mp3');
+    sounds["select"]=loadSound('./inkatan/GameCore/sounds/select.mp3');
+
+    
+}else{
+    print("start");
+    setTimeout(function(){
+
+        sounds.background.loop(0,1,0.4);
+    },1000)
 }
 }
 
@@ -162,6 +182,7 @@ function keyPressed() {
     } else if (key === 'q') {
         mapa.changeSelect()
     } else if (key === 'd') {
+        
         if(dado){
            dice.throwDice() 
            dado=false

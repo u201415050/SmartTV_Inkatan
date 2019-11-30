@@ -21,6 +21,7 @@ var numberPlayers = 0
 var ready = [];
 //SMARTV CONTROLLER ACTIONS
  $(document).ready(function () {
+    
     //testflow()
 }); 
 /* $(document).keydown(function (e) {
@@ -113,6 +114,7 @@ function found(url, indexElement) {
 function onclickServer(value){
     ActualParameters.url = entablishConnection(value);
     connect(ActualParameters.url);
+    sounds.drum.play(0,1,0.3)
     $("#screen1").css("display", "none");
     $("#screen2").css("display", "flex");
     $("#image1").css("display", "none");
@@ -139,7 +141,8 @@ var playersIcons = [
 function setPlayers(valueCursor) {
 	$("#messageWaiting").remove();
 	$("#logo").remove();
-	$("#titulo").css("display","block");
+    $("#titulo").css("display","block");
+    sounds.drum.play(0,1,0.3)
 	for (var i = 0; i < valueCursor; i++) {
 		$("#playersContainer").append(playersIcons[i]);
 		tasks.push(
@@ -166,7 +169,8 @@ function changeName(name) {
 		$('#playerName' + lenPlayers).text(name)
 		$('#playerName' + lenPlayers).addClass("focus");
 		listNames.push(name)
-		$('#player' + lenPlayers).removeClass("disabled")
+        $('#player' + lenPlayers).removeClass("disabled")
+        sounds.drum.play(0,1.3,0.3)
 		setReady(lenPlayers - 1)
 	}
 	console.log(tasks)
@@ -210,8 +214,9 @@ function setReady(index) {
         ActualParameters.numberPlayers=numberPlayers;
         console.log(ActualParameters);
         setTimeout(function () {
+            
 			SetGameModeScreen();
-		}, 500)
+		}, 1000)
         
 		/*setTimeout(function () {
 			location.replace(location.href.replace("SelectPlayers","GameMode")+"&namesPlayers="+strNames.substr(1)+"&numberPlayers="+numberPlayers)
@@ -231,6 +236,7 @@ function setStateListeners(){
 	});
 }
 function SetGameModeScreen(){
+    sounds.drum.play(0,1,0.3)
     $("#screen2").css("display", "none");
     $("#screen3").css("display", "flex");
     $("#image2").css("display", "none");
@@ -242,6 +248,7 @@ function GameModeSetStateListeners(){
 	glob.addState("GAMEMODE");
 	glob.setCurrentState("GAMEMODE");
 	glob.addListenertoState("GAMEMODE", "MODE", function (obj) {
+        sounds.drum.play(0,1,0.3)
         console.log("xxx")
 		sendMessageServer({
 			action:"CONNECTION",
@@ -298,8 +305,10 @@ function GameValueSetStateListeners(mode){
             glob.addListenertoState("GAMEVALUE", "VALUE", function (obj) {
                 ActualParameters.gamemode="points";
                 ActualParameters.gamevalue=obj.value
+                sounds.drum.play(0,1.3,0.3)
                 modificarPuntos(obj.value);
                 setTimeout(function(){console.log(ActualParameters);
+                    sounds.drum.play(0,1,0.3)
                     $("#screen4").css("display", "none");
                     $("#screen5").css("display", "none");
                     $("#image3").css("display", "none");
@@ -312,9 +321,11 @@ function GameValueSetStateListeners(mode){
             glob.addListenertoState("GAMEVALUE", "VALUE", function (obj) {
                 ActualParameters.gamemode="expansion";
                 ActualParameters.gamevalue=obj.value
+                sounds.drum.play(0,1.3,0.3)
                 modificarExpansion(obj.value);
                 console.log(ActualParameters);
                 setTimeout(function(){
+                    sounds.drum.play(0,1,0.3)
                     $("#screen4").css("display", "none");
                     $("#screen5").css("display", "none");
 
@@ -346,14 +357,14 @@ function testflow(){
                         setTimeout(function(){
                              glob.execute({action:"MODE",mode:"expansion"})
                             setTimeout(function(){
-                                glob.execute({action:"VALUE",value:300})
-                            },800) 
-                        },1000)
-                    },100)
-                },100)
-            },100)
-        },100)
-    },100)
+                                glob.execute({action:"VALUE",value:8})
+                            },2000) 
+                        },2000)
+                    },2000)
+                },2000)
+            },2000)
+        },2000)
+    },2000)
 }
 
 function testflow2(){

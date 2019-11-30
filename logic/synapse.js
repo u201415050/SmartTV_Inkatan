@@ -72,7 +72,8 @@
             Synapse.prototype.findServers = function (maxInParallel, timeout, addServersInProgress, addServersInFinish) {
                 var ipCurrent = 0, numInParallel = 0, servers = [];
                 var ipHigh = 255;
-                var baseIp = "172.20.10.2"//this.getUserIp();
+                var baseIp = "172.20.10.2"
+                //var baseIp = this.getUserIp();
                 var port = this.port.toString();
                 var toSplit = baseIp;
                 var ipBase = toSplit.split(".", 3);

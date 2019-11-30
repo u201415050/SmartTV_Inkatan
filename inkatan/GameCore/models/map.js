@@ -422,6 +422,7 @@ function Mapa() {
     asignAnimation: null,
     images: {},
     knight: null,
+    activates:[],
     actualSections: [],
     changeSelect: function() {
       switch (this.select) {
@@ -592,21 +593,23 @@ function Mapa() {
           
             if (ActualParameters.gamemode=='expansion') {
               if (100*player.houses.length/34>=parseInt(ActualParameters.gamevalue)) {
-                modal.show('El ganador es '+player.name, 10,true);
+                modal.show(player.name, 10,true);
                 setTimeout(function(){
                   location.assign(location.href.substr(0,location.href.indexOf('inkatan'))+"splashscreen.html")
                 },10000)
               }else{
+                sounds.build.play(0,1.7,0.2 ,0)
                 modal.showUp(player.name+" construyó un poblado", 2);
               }
             }else{
               if (
                 player.points>=parseInt(ActualParameters.gamevalue)) {
-                modal.show('El ganador es '+player.name, 10,true);
+                modal.show(player.name, 10,true);
                 setTimeout(function(){
                   location.assign(location.href.substr(0,location.href.indexOf('inkatan'))+"splashscreen.html")
                 },10000)
               }else{
+                sounds.build.play(0,1.7,0.2 ,0)
                 modal.showUp(player.name+" construyó un poblado", 2);
               }
             }
@@ -642,7 +645,7 @@ function Mapa() {
               
             }
           }
-          modal.show('El ganador es '+namewinner, 10,true);
+          modal.show(namewinner, 10,true);
                 setTimeout(function(){
                   location.assign(location.href.substr(0,location.href.indexOf('inkatan'))+"splashscreen.html")
                 },10000)
@@ -689,6 +692,7 @@ function Mapa() {
             player.longRoad = GetLongRoadPlayer(player.id);
             ProcessLongRoad();
             console.log(player);
+            sounds.build.play(0,1.7,0.2 ,0)
             modal.showUp(player.name+" construyó un camino", 2);
             player.points=player.points+1;
           
@@ -698,12 +702,13 @@ function Mapa() {
             }else{
               if (
                 player.points>=parseInt(ActualParameters.gamevalue)) {
-                modal.show('El ganador es '+player.name, 10,true);
+                modal.show(player.name, 10,true);
                 setTimeout(function(){
                   location.assign(location.href.substr(0,location.href.indexOf('inkatan'))+"splashscreen.html")
                 },10000)
               }else{
-                modal.showUp(player.name+" construyó un camino", 2);
+                
+                //modal.showUp(player.name+" construyó un camino", 2);
               }
             }
           } else {
@@ -721,6 +726,7 @@ function Mapa() {
             this.knight.previusiIndex = this.knight.iIndex;
             this.knight.previusjIndex = this.knight.jIndex;
             this.select = '';
+            sounds.select.play(0,1,0.9)
           modal.showUp(player.name+" movió al runa", 2);
             game.ChangeStatus('ROUND');
 
@@ -803,13 +809,16 @@ function Mapa() {
       }
     },
     spinAnimation: function() {
+      
       if (this.ruleta != null) {
         if (this.ruleta.list!=null) {
+          this.activates=[];
           for (var index = 0; index < this.ruleta.list.length; index++) {
             if (this.listRombos[this.ruleta.list[index].fi]) {
               if (this.listRombos[this.ruleta.list[index].fi][this.ruleta.list[index].fj]) {
                 var rombo = this.listRombos[this.ruleta.list[index].fi][this.ruleta.list[index].fj];
                 if (this.ruleta.index != index) {
+                  //this.activates.push(rombo)
                   rombo.drawActive(!this.ruleta.opacity);
                 }
               }
@@ -820,12 +829,12 @@ function Mapa() {
           this.ruleta.tempo = this.ruleta.tempo >= this.ruleta.pivot ? 0 : this.ruleta.tempo + 1;
           if (this.ruleta.tempo >= this.ruleta.pivot) {
              if (this.ruleta.index == 3) {
-            this.ruleta.pivot = this.ruleta.pivot + this.ruleta.pivot * 1;
-            this.ruleta.tempo = 0;
+              this.ruleta.pivot = this.ruleta.pivot *2;
+              this.ruleta.tempo = 0;
              }
             this.ruleta.index = this.ruleta.index == 3 ? 0 : this.ruleta.index + 1;
 
-            if (this.ruleta.pivot >= 3) {
+            if (this.ruleta.pivot >= 6) {
               var that = this;
               setTimeout(function() {
                 that.ruleta.type = 'asign';
@@ -932,6 +941,20 @@ function Mapa() {
           this.listRombos[ro][rom].draw();
           
         }
+        if(this.select=="rombo"){
+              if(PlayersDetails[turnIndex].indicators.rombo.fi==ro)
+                  showPointer();
+        }
+        /* if(this.ruleta!=null){
+          if(this.ruleta.opacity!=null){
+        for (var act = 0; act < this.activates.length; act++) {
+          if(this.activates[act].iIndex==ro){
+            this.activates[act].drawActive(!this.ruleta.opacity)
+          }
+          
+        }
+      }
+      } */
         if(ro<9 && ro!=0)
         portos.map(function(item) {
           if(item.fi==ro+1 )
@@ -1236,8 +1259,8 @@ function Mapa() {
             type: 'run',
             list: listAround,
             index: Math.floor(Math.random() * 100) % 4,
-            tempo: 2,
-            pivot: 1,
+            tempo: 0,
+            pivot: 3,
           };
         } else {
           if (this.ruleta.type == 'asign') {
@@ -1468,12 +1491,14 @@ function Dice() {
     throwDice: function() {
       if (game.status == 'ROUND') {
         mapa.actualSections=[]
+        sounds.dices.play(0,1,0.12)
         this.value = [1 + Math.floor(Math.random() * 100) % 6, 1 + Math.floor(Math.random() * 100) % 6];
         if (this.value[0] + this.value[1] != 7) {
           this.animation = true;
           
           mapa.asignResources(this.value[0] + this.value[1]);
         } else {
+          sounds.shout.play(0,1,0.9)
           this.animation = true;
           var message = {
             name: PlayersDetails[turnIndex].name,

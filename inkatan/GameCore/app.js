@@ -23,6 +23,9 @@ function PaseTurno() {
 		action:"TURNO",
 		player: PlayersDetails[turnIndex].name
 	})
+	if(game.status!='START'){
+		sounds.drum.play(0,1,0.3)
+	}
 	activeTurn = true
 	dado=true;
 	modal.showUp("Es turno de "+PlayersDetails[turnIndex].name, 2);

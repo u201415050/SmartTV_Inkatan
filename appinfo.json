@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "vendor": "My Company",
     "type": "web",
-    "main": "splashscreen.html",
+    "main": "index.html",
     "title": "Inkatan",
     "icon": "icon.png",
     "largeIcon": "largeIcon.png"

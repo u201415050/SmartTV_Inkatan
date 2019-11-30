@@ -16,7 +16,7 @@ function connect(url) {
 
         logs(url)
         webSocket.ws.onopen = function () {
-           
+           sendMessageServer({action:"CONEXION"});
                     if (ActualParameters.namesPlayers != null) {
                         var listPlayers = ActualParameters.namesPlayers.split(",");
                         sendMessageServer({
